@@ -16,6 +16,11 @@
  pin digital 6 : left 5
  pin digital 7 : left 6
  pin digital 8 : left 7
+ 
+ GND  GND
+ VCC  5V
+ SDA A4
+ SCL A5
 */
 
 #include <SPI.h>
@@ -45,11 +50,15 @@ Keypad keypad = Keypad( makeKeymap(keys), rowPins, colPins, rows, cols );
 int block=2;
 byte blockcontent[16];
 byte readbackblock[18];
-char name[6];
 
 char incomingByte;
 String txtMsg;
-int pre_money = 0;
+long pre_money = 0;
+String username = "";
+String choice = "";
+String bet_money = "";
+
+int game_status = 0; // 0: at first; 1: choose money; 2: choose number; 3: wait for result 
 
 void setup() {
     Serial.begin(9600);
@@ -65,7 +74,6 @@ void setup() {
 }
 
 void loop(){
-    char key = keypad.getKey();
     mfrc522.PCD_Init();
         
     if ( ! mfrc522.PICC_IsNewCardPresent()) {
@@ -87,7 +95,7 @@ void loop(){
             txtMsg += "B";
         }else if(incomingByte == 'E'){
             txtMsg = txtMsg.substring(1);
-            blockcontent[14] = txtMsg.toInt();
+            blockcontent[15] = txtMsg.toInt();
             writeBlock(block, blockcontent);
             Serial.println(txtMsg);
             txtMsg = "";
@@ -97,37 +105,188 @@ void loop(){
             }
         }
         
-        if(incomingByte == '#'){
-          txtMsg = "";
-          txtMsg += "#";
-        }else if(incomingByte == '$'){
-          Serial.println(txtMsg.substring(1).length());
-          txtMsg = txtMsg.substring(0,1);
-          blockcontent[15] = txtMsg.toInt();
-          writeBlock(block, blockcontent);
-          txtMsg = "";
-        }else{
-          if(txtMsg.indexOf('#') == 0){
-            txtMsg += incomingByte;
-          }
-        }
+//        if(incomingByte == '#'){
+//          txtMsg = "";
+//          txtMsg += "#";
+//        }else if(incomingByte == '$'){
+//          Serial.println(txtMsg.substring(1).length());
+//          txtMsg = txtMsg.substring(0,1);
+//          blockcontent[15] = txtMsg.toInt();
+//          writeBlock(block, blockcontent);
+//          txtMsg = "";
+//        }else{
+//          if(txtMsg.indexOf('#') == 0){
+//            txtMsg += incomingByte;
+//          }
+//        }
     }
     
     readBlock(block, readbackblock);
-    if(pre_money != readbackblock[14]){
-        Serial.println(readbackblock[14]);
+    if(pre_money != readbackblock[15]){
+//        Serial.println(readbackblock[15]);
+        for(int i=9; i<15; i++){
+          if(readbackblock[i] != 0){
+            char c = char(readbackblock[i]);
+            username += c;
+//            result[i-9] = readbackblock[i];
+          }
+        }
+        String welcome = format_string("Welcome "+username);
         lcd.setCursor(0,0);
-        lcd.print("Welcome ");
-        lcd.print(readbackblock[14]);
-        Serial.println(readbackblock[15]);
+        lcd.print(welcome);
+        pre_money = readbackblock[15];
+        String money = format_money(pre_money*500);
         lcd.setCursor(0,1);
-        lcd.print(readbackblock[15]);
-        pre_money = readbackblock[14];
+        lcd.print(money);
     }
     
-    if (key != NO_KEY){
-      Serial.println(key);
-      lcd.print(key);
+    char key_input = keypad.getKey();
+    if(game_status == 0){
+      if(key_input == '#'){
+        game_status = 1;
+        Serial.println(game_status);
+        lcd.setCursor(0,0);
+        lcd.print("Type your choice");
+        lcd.setCursor(0,1);
+        lcd.print("                ");
+      }
+    }
+    
+    if (key_input != NO_KEY){
+      if(game_status == 1){
+        Serial.println(key_input);
+        switch(key_input){
+          case '1':
+            lcd.setCursor(0,1);
+            lcd.print("1           ");
+            choice = "1";
+            
+            break;
+          case '2':
+            lcd.setCursor(0,1);
+            lcd.print("2           ");
+            choice = "2";
+            break;
+          case '3':
+            lcd.setCursor(0,1);
+            lcd.print("3           ");
+            choice = "3";
+            break;
+          case '4':
+            lcd.setCursor(0,1);
+            lcd.print("4           ");
+            choice = "4";
+            break;
+          case '5':
+            lcd.setCursor(0,1);
+            lcd.print("5           ");
+            choice = "5";
+            break;
+          case '6':
+            lcd.setCursor(0,1);
+            lcd.print("6           ");
+            choice = "6";
+            break;
+          case '7':
+            lcd.setCursor(0,1);
+            lcd.print("Small       ");
+            choice = "7";
+            break;
+          case '8':
+            lcd.setCursor(0,1);
+            lcd.print("Big         ");
+            choice = "8";
+            break;
+          case '#':
+            if(choice != ""){
+              game_status = 2;
+              lcd.setCursor(0,0);
+              lcd.print("bet money        ");
+              lcd.setCursor(0,1);
+              lcd.print("                 ");
+            }
+            break;
+          default:
+            lcd.setCursor(0,1);
+            lcd.print("Wrong choice");
+            break;
+        }
+      }
+      
+      if(game_status == 2){
+        lcd.setCursor(0,1);
+        switch(key_input){
+          case '1':
+            bet_money += "1";
+            lcd.print(format_string(bet_money));
+            break;
+          case '2':
+            bet_money += "2";
+            lcd.print(format_string(bet_money));
+            break;
+          case '3':
+            bet_money += "3";
+            lcd.print(format_string(bet_money));
+            break;
+          case '4':
+            bet_money += "4";
+            lcd.print(format_string(bet_money));
+            break;
+          case '5':
+            bet_money += "5";
+            lcd.print(format_string(bet_money));
+            break;
+          case '6':
+            bet_money += "6";
+            lcd.print(format_string(bet_money));
+            break;
+          case '7':
+            bet_money += "7";
+            lcd.print(format_string(bet_money));
+            break;
+          case '8':
+            bet_money += "8";
+            lcd.print(format_string(bet_money));
+            break;
+          case '9':
+            bet_money += "9";
+            lcd.print(format_string(bet_money));
+            break;
+          case '0':
+            if(bet_money != ""){
+              bet_money += "0";
+              lcd.print(format_string(bet_money));
+            }
+            break;
+          case '*':{
+            lcd.setCursor(0,1);
+            int ml = bet_money.length();
+            bet_money = bet_money.substring(0, ml-1);
+            lcd.print(format_string(bet_money));
+            lcd.setCursor(ml-1,1);
+            break;}
+          case '#':
+            if((bet_money.toInt() % 500) == 0){
+              game_status = 3;
+              Serial.print("C");
+              Serial.print(choice);
+              Serial.print("E");
+              Serial.print("T");
+              Serial.print(bet_money);
+              Serial.print("Y");
+              waitResult();
+            }else{
+              lcd.setCursor(0,0);
+              lcd.print("500 per unit");
+              delay(1000);
+              lcd.setCursor(0,0);
+              lcd.print("bet money");
+            }
+            break;
+          default:
+            break;
+        }
+      }
     }
 //    Serial.print("read block: ");
 //    for (int j=0 ; j<16 ; j++){
@@ -187,4 +346,65 @@ int readBlock(int blockNumber, byte arrayAddress[]) {
     
 //    Serial.println("block was read");
     delay(500);
+}
+
+String format_money(long m){
+//  Serial.println(money);
+  String final = "$";
+  String money = String(m);
+//  Serial.println(money);
+  int length = money.length();
+  if(length > 6){
+    Serial.println("6");
+    money = money.substring(0, (length-6))+ "," + money.substring((length-6), (length-3)) + "," + money.substring((length-3), length);
+  }else if(length > 3){
+    money = money.substring(0, (length-3)) + "," + money.substring((length-3), (length));
+  }
+  final = final + money;
+  final = format_string(final);
+  return final;
+}
+
+String format_string(String string){
+  int len = string.length();
+  if(len<16){
+    for(int i=0; i<16-len; i++){
+      string += " ";
+    }
+  }
+  return string;
+}
+
+void waitResult(){
+  delay(2000);
+  int r = random(1, 7);
+  Serial.println("Choice:" + choice);
+  Serial.println(r);
+  String rand = String(r);
+  long b = bet_money.toInt();
+  if(rand == choice){
+    lcd.setCursor(0, 0);
+    lcd.print(format_string("Brovo!"));
+    lcd.setCursor(0,1);
+    long earn = (b / 500) * 3 + pre_money;
+    lcd.print(earn * 500);
+  }else if(r <= 3 && choice.toInt() <= 3){
+    lcd.setCursor(0, 0);
+    lcd.print(format_string("Good!"));
+    lcd.setCursor(0,1);
+    long earn = (b / 500) * 1 + pre_money;
+    lcd.print(earn * 500);
+  }else if(r >= 4 && choice.toInt() >= 4){
+    lcd.setCursor(0, 0);
+    lcd.print(format_string("Good!"));
+    lcd.setCursor(0,1);
+    long earn = (b / 500) * 1 + pre_money;
+    lcd.print(earn * 500);
+  }else{
+    lcd.setCursor(0, 0);
+    lcd.print(format_string("Try again"));
+    lcd.setCursor(0,1);
+    long earn = pre_money - (b / 500);
+    lcd.print(earn * 500);
+  }
 }

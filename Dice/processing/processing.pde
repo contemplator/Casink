@@ -23,8 +23,8 @@ void setup(){
   movie2.loop();
   movie3 = new Movie(this, "/Users/idlefox/Casink/Dice/processing/anim_card_flip.mp4");
   movie3.loop();
-//  port = new Serial(this, "/dev/tty.usbmodem1421", 9600);
-//  port.bufferUntil('\n');
+  port = new Serial(this, "/dev/tty.usbmodem1421", 9600);
+  port.bufferUntil('\n');
 
   // video block
   // setup thread
@@ -78,12 +78,13 @@ void draw(){
   }
 }
 
-//void serialEvent( Serial port){
-////  bringhtness = float(port.readStringUntil(lf));
-//  String inString = port.readString();
+void serialEvent( Serial port){
+//  bringhtness = float(port.readStringUntil(lf));
+  String inString = port.readString();
 //  bringhtness = Float.parseFloat(inString);
-//  println(inString);
-//}
+  println(inString);
+  port.write(65);
+}
 
 void movieEvent(Movie movie){
   movie.read();
