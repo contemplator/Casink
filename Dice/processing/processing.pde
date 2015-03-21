@@ -19,7 +19,7 @@ void setup(){
   size(640, 480);
   movie1 = new Movie(this, "/Users/idlefox/Casink/Dice/processing/avi.mp4");
   movie1.loop();
-  movie2 = new Movie(this, "/Users/idlefox/Casink/Dice/processing/dice_animationver.avi");
+  movie2 = new Movie(this, "/Users/idlefox/Casink/Dice/processing/avi.mp4");
   movie2.loop();
   movie3 = new Movie(this, "/Users/idlefox/Casink/Dice/processing/anim_card_flip.mp4");
   movie3.loop();
@@ -32,7 +32,7 @@ void setup(){
 }
 
 void draw(){
-  println(mt + ":" + md);
+//  println(mt + ":" + md);
   
   switch(result){
     case 1:
@@ -80,10 +80,15 @@ void draw(){
 
 void serialEvent( Serial port){
 //  bringhtness = float(port.readStringUntil(lf));
-  String inString = port.readString();
+  int inString = port.read();
 //  bringhtness = Float.parseFloat(inString);
   println(inString);
-  port.write(65);
+  if(inString == 83){
+    println(inString);
+    port.write('W');
+  }else{
+    port.write('E');
+  }
 }
 
 void movieEvent(Movie movie){

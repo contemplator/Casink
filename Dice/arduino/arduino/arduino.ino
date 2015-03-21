@@ -77,19 +77,20 @@ void loop(){
     mfrc522.PCD_Init();
         
     if ( ! mfrc522.PICC_IsNewCardPresent()) {
-        Serial.println("It is the same card.");
+//        Serial.println("It is the same card.");
         delay(300);
         return;
     }
 
     if ( ! mfrc522.PICC_ReadCardSerial()) {
-        Serial.println("Can't read the card.");
+//        Serial.println("Can't read the card.");
         delay(100);
        	return;
     }
     
     if (Serial.available() > 0) {
         incomingByte = (char) Serial.read();
+        Serial.println(incomingByte);
         if(incomingByte == 'B'){
             txtMsg = "";
             txtMsg += "B";
@@ -97,7 +98,7 @@ void loop(){
             txtMsg = txtMsg.substring(1);
             blockcontent[15] = txtMsg.toInt();
             writeBlock(block, blockcontent);
-            Serial.println(txtMsg);
+//            Serial.println(txtMsg);
             txtMsg = "";
         }else{
             if(txtMsg.indexOf('B') == 0){
@@ -144,17 +145,18 @@ void loop(){
     if(game_status == 0){
       if(key_input == '#'){
         game_status = 1;
-        Serial.println(game_status);
+//        Serial.println(game_status);
         lcd.setCursor(0,0);
         lcd.print("Type your choice");
         lcd.setCursor(0,1);
         lcd.print("                ");
+        key_input = NO_KEY;
       }
     }
     
     if (key_input != NO_KEY){
       if(game_status == 1){
-        Serial.println(key_input);
+//        Serial.println(key_input);
         switch(key_input){
           case '1':
             lcd.setCursor(0,1);
@@ -204,6 +206,7 @@ void loop(){
               lcd.print("bet money        ");
               lcd.setCursor(0,1);
               lcd.print("                 ");
+              key_input = NO_KEY;
             }
             break;
           default:
@@ -268,12 +271,14 @@ void loop(){
           case '#':
             if((bet_money.toInt() % 500) == 0){
               game_status = 3;
-              Serial.print("C");
-              Serial.print(choice);
-              Serial.print("E");
-              Serial.print("T");
-              Serial.print(bet_money);
-              Serial.print("Y");
+//              Serial.print("C");
+//              Serial.print(choice);
+//              Serial.print("E");
+//              Serial.print("T");
+//              Serial.print(bet_money);
+//              Serial.print("Y");
+              Serial.println("S");
+              key_input = NO_KEY;              
               waitResult();
             }else{
               lcd.setCursor(0,0);
@@ -355,7 +360,7 @@ String format_money(long m){
 //  Serial.println(money);
   int length = money.length();
   if(length > 6){
-    Serial.println("6");
+//    Serial.println("6");
     money = money.substring(0, (length-6))+ "," + money.substring((length-6), (length-3)) + "," + money.substring((length-3), length);
   }else if(length > 3){
     money = money.substring(0, (length-3)) + "," + money.substring((length-3), (length));
@@ -378,8 +383,8 @@ String format_string(String string){
 void waitResult(){
   delay(2000);
   int r = random(1, 7);
-  Serial.println("Choice:" + choice);
-  Serial.println(r);
+//  Serial.println("Choice:" + choice);
+//  Serial.println(r);
   String rand = String(r);
   long b = bet_money.toInt();
   if(rand == choice){
