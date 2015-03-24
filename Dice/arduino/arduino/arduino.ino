@@ -91,17 +91,20 @@ void loop(){
     if (Serial.available() > 0) {
         incomingByte = (char) Serial.read();
         Serial.println(incomingByte);
-        if(incomingByte == 'B'){
+        if(incomingByte == 'R'){
             txtMsg = "";
-            txtMsg += "B";
-        }else if(incomingByte == 'E'){
-            txtMsg = txtMsg.substring(1);
-            blockcontent[15] = txtMsg.toInt();
-            writeBlock(block, blockcontent);
-//            Serial.println(txtMsg);
-            txtMsg = "";
+            txtMsg += "R";
+        }else if(incomingByte == 'T'){
+          // Get the result number
+          txtMsg = txtMsg.substring(1);
+          countResult(txtMsg);
+            
+//            pre_money = pre_money + txtMsg.toInt();
+//            blockcontent[15] = txtMsg.toInt();
+//            writeBlock(block, blockcontent);
+//            txtMsg = "";
         }else{
-            if(txtMsg.indexOf('B') == 0){
+            if(txtMsg.indexOf('R') == 0){
                 txtMsg += incomingByte;
             }
         }
@@ -142,10 +145,12 @@ void loop(){
     }
     
     char key_input = keypad.getKey();
+    
     if(game_status == 0){
+//      Serial.println(key_input);
       if(key_input == '#'){
         game_status = 1;
-//        Serial.println(game_status);
+
         lcd.setCursor(0,0);
         lcd.print("Type your choice");
         lcd.setCursor(0,1);
@@ -271,21 +276,17 @@ void loop(){
           case '#':
             if((bet_money.toInt() % 500) == 0){
               game_status = 3;
-//              Serial.print("C");
-//              Serial.print(choice);
-//              Serial.print("E");
-//              Serial.print("T");
-//              Serial.print(bet_money);
-//              Serial.print("Y");
               Serial.println("S");
-              key_input = NO_KEY;              
+              key_input = NO_KEY;
+              lcd.setCursor(0,0);
+              lcd.print(format_string("Wait for result"));
               waitResult();
             }else{
               lcd.setCursor(0,0);
-              lcd.print("500 per unit");
+              lcd.print(format_string("500 per unit"));
               delay(1000);
               lcd.setCursor(0,0);
-              lcd.print("bet money");
+              lcd.print(format_string("bet money"));
             }
             break;
           default:
@@ -381,35 +382,52 @@ String format_string(String string){
 }
 
 void waitResult(){
+  Serial.println("S");
+//  delay(2000);
+//  int r = random(1, 7);
+//  String rand = String(r);
+//  long b = bet_money.toInt();
+}
+
+void countResult(String result){
+  lcd.setCursor(0,0);
+  lcd.print(format_string(result));
   delay(2000);
-  int r = random(1, 7);
-//  Serial.println("Choice:" + choice);
-//  Serial.println(r);
-  String rand = String(r);
+  int r = result.toInt();
+  int c = choice.toInt();
   long b = bet_money.toInt();
-  if(rand == choice){
+  if(r == c){
     lcd.setCursor(0, 0);
     lcd.print(format_string("Brovo!"));
     lcd.setCursor(0,1);
     long earn = (b / 500) * 3 + pre_money;
     lcd.print(earn * 500);
-  }else if(r <= 3 && choice.toInt() <= 3){
+    blockcontent[15] = pre_money+3;
+    writeBlock(block, blockcontent);
+  }else if(r <= 3 && choice.toInt() == 7){
     lcd.setCursor(0, 0);
     lcd.print(format_string("Good!"));
     lcd.setCursor(0,1);
     long earn = (b / 500) * 1 + pre_money;
     lcd.print(earn * 500);
-  }else if(r >= 4 && choice.toInt() >= 4){
+    blockcontent[15] = pre_money+1;
+    writeBlock(block, blockcontent);
+  }else if(r >= 4 && choice.toInt() == 8){
     lcd.setCursor(0, 0);
     lcd.print(format_string("Good!"));
     lcd.setCursor(0,1);
     long earn = (b / 500) * 1 + pre_money;
     lcd.print(earn * 500);
+    blockcontent[15] = pre_money+1;
+    writeBlock(block, blockcontent);
   }else{
     lcd.setCursor(0, 0);
     lcd.print(format_string("Try again"));
     lcd.setCursor(0,1);
     long earn = pre_money - (b / 500);
     lcd.print(earn * 500);
+    blockcontent[15] = pre_money-1;
+    writeBlock(block, blockcontent);
   }
 }
+  

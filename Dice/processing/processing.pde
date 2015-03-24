@@ -17,9 +17,9 @@ float mt;
 
 void setup(){
   size(640, 480);
-  movie1 = new Movie(this, "/Users/idlefox/Casink/Dice/processing/avi.mp4");
+  movie1 = new Movie(this, "/Users/idlefox/Desktop/dice_anime.avi");
   movie1.loop();
-  movie2 = new Movie(this, "/Users/idlefox/Casink/Dice/processing/avi.mp4");
+  movie2 = new Movie(this, "/Users/idlefox/Desktop/dice_animationver.avi");
   movie2.loop();
   movie3 = new Movie(this, "/Users/idlefox/Casink/Dice/processing/anim_card_flip.mp4");
   movie3.loop();
@@ -71,28 +71,36 @@ void draw(){
   
   if((mt / md) >= 0.95){
     status = 0;
-//    playing = 0;
+    playing = 0;
     result = 0;
     md = 0;
     mt = 0;
+    port.write('R');
+    port.write(result);
+    port.write('T');
   }
 }
 
 void serialEvent( Serial port){
-//  bringhtness = float(port.readStringUntil(lf));
   int inString = port.read();
-//  bringhtness = Float.parseFloat(inString);
-  println(inString);
+//  println(inString);
   if(inString == 83){
     println(inString);
-    port.write('W');
+    randResult();
   }else{
-    port.write('E');
+    println(inString);
   }
 }
 
 void movieEvent(Movie movie){
   movie.read();
+}
+
+void randResult(){
+  if(status == 0){
+    float tmp = random(1, 4);
+    result = int(tmp);
+  }
 }
 
 void mousePressed() {
