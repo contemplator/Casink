@@ -1,0 +1,24 @@
+extends layout
+
+block content
+	div(class="main")
+		h1= title
+		p Welcome to #{title}
+		form(class="form-horizontal")
+			div(class="form-group")
+				label(class="col-sm-4 control-label") ID
+				div(class="col-sm-5")
+					input(type="number" class="form-control" id="user_id" min="0")
+			div(class="form-group")
+				label(class="col-sm-4 control-label") Money
+				div(class="col-sm-5")
+					input(type="number" class="form-control" id="money" disable value="5000")
+			div(class="form-group")
+				label(class="col-sm-4 control-label") Student ID
+				div(class="col-sm-5")
+					input(type="text" class="form-control" id="student_id" placeholder="ex: 100306020" maxlength="10")
+			div(class="form-group")
+				label(class="col-sm-4 control-label") User Name
+				div(class="col-sm-5")
+					input(type="text" class="form-control" id="user_name" maxlength="6" placeholder="ex: Melody")
+			button(class="btn btn-primary") Submit
