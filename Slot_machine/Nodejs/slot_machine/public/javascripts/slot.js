@@ -1,16 +1,21 @@
 var gameStatus = "finish"; // finish, running, waiting, stopping, finish...
 
+// 玫瑰的圖檔
 var rose1 = "resources/white.png", 
 	rose2 = "resources/blue.png",
 	rose3 = "resources/red.png";
 
-// setInterval
+// 計時器 setInterval
+// ***************
 var as1, as2, as3, bs1, bs2, bs3, cs1, cs2, cs3;
-// 
+
+// ***************
 var rad = [[rose1, rose2, rose3],[rose1, rose2, rose3],[rose1, rose2, rose3]];
 // each rose status, false = stop, true = runing
+// ***************
 var af1 = false, af2 = false, af3 = false, bf1 = false, bf2 = false, bf3 = false, cf1 = false, cf2 = false, cf3 = false;
 // 記錄每一排最後的排列狀況
+// ***************
 var result1 = [], result2 = [], result3 = [];
 var chahge;
 
@@ -36,6 +41,8 @@ $(document).ready(function(){
 	$("#c2").html(getFruit(2));
 	$("#c3").css({top: 560, left: 1035, position:'absolute', width: 150, height: 120});
 	$("#c3").html(getFruit(2));
+
+	// *************** 增加d and e
 
 	$("#total_content").text(formatNumber(total));
 	$("#bet_content").text(bet);
@@ -101,6 +108,7 @@ function getFruit(number){
 }
 
 // 轉動
+// ***************
 function rollFruit(s){
 	$("#scrolling").html('<embed width="0" height="0" src="resources/main_voice.mp3" autostart="true" loop="true"></embed>');
 
