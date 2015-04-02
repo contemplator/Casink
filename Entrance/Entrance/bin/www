@@ -8,6 +8,13 @@ var app = require('../app');
 var debug = require('debug')('Entrance:server');
 var http = require('http');
 
+var socketio = require('socket.io');
+var SerialPort = require("serialport").SerialPort;
+var socketServer;
+var serialPort;
+var portName = '/dev/tty.usbmodem1421'; //change this to your Arduino port
+var sendData = "";
+
 /**
  * Get port from environment and store in Express.
  */
@@ -28,6 +35,9 @@ var server = http.createServer(app);
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
+
+initSocketIO(server, debug);
+serialListener(debug);
 
 /**
  * Normalize a port into a number, string, or false.
@@ -87,4 +97,45 @@ function onListening() {
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
+}
+
+function initSocketIO(httpServer,debug){
+  socketServer = socketio.listen(httpServer);
+  if(debug == false){
+    socketServer.set('log level', 1); // socket IO debug off
+  }
+  socketServer.on('connection', function (socket) {
+    console.log("user connected");
+    // receive value from arduino
+    // socketServer.on('update', function(data) {
+    //   socket.emit('updateData',{fromArduino:data}); // send data on the updateDate channel
+    // });
+    // send value to arduino
+    socket.on('sendArduino', function(data) {
+      console.log(data);
+      serialPort.write("#"+data+"$");
+    });
+  });
+}
+
+// Listen to serial port, read data from arduino 
+function serialListener(debug){
+  var receivedData = "";
+  serialPort = new SerialPort(portName, {
+    baudrate: 9600,
+    dataBits: 8,
+    parity: 'none',
+    stopBits: 1,
+    flowControl: false
+  });
+
+  serialPort.on("open", function () {
+    console.log('open serial communication');
+    // Listens to incoming data
+    serialPort.on('data', function(data) {
+      receivedData = data.toString();
+      socketServer.emit('update', {fromArduino:receivedData});
+      console.log(receivedData);
+    });
+  });
 }
