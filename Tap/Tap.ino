@@ -7,7 +7,8 @@ int sensorValue1 = 0;
 
 void setup() {
   Serial.begin(9600);
-  pinMode(ledPin1, OUTPUT);
+  pinMode(13, OUTPUT);
+  pinMode(3, OUTPUT);
 //  pinMode(ledPin2, OUTPUT);
 }
 
@@ -19,6 +20,12 @@ void loop() {
 //  Serial.print("2:");
 //  Serial.println(sensorValue2);
   if(sensorValue1 > 500){
+    digitalWrite(3, HIGH);
+  }else{
+    digitalWrite(3, LOW);
+  }
+  
+  if(sensorValue1 > 1000){
     digitalWrite(ledPin1, HIGH);
   }else{
     digitalWrite(ledPin1, LOW);
@@ -29,6 +36,10 @@ void loop() {
 //  }else{
 //    digitalWrite(ledPin2, LOW);
 //  }
-  
-//  delay(200);
+//  digitalWrite(13, HIGH);   // turn the LED on (HIGH is the voltage level)
+//  digitalWrite(3, LOW);    // turn the LED off by making the voltage LOW
+//  delay(1000);              // wait for a second
+//  digitalWrite(13, LOW);    // turn the LED off by making the voltage LOW
+//  digitalWrite(3, HIGH);    // turn the LED off by making the voltage LOW
+//  delay(1000);              // wait for a second
 }
