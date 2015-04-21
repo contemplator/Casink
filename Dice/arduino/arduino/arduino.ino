@@ -98,31 +98,11 @@ void loop(){
           // Get the result number
           txtMsg = txtMsg.substring(1);
           countResult(txtMsg);
-            
-//            pre_money = pre_money + txtMsg.toInt();
-//            blockcontent[15] = txtMsg.toInt();
-//            writeBlock(block, blockcontent);
-//            txtMsg = "";
         }else{
             if(txtMsg.indexOf('R') == 0){
                 txtMsg += incomingByte;
             }
         }
-        
-//        if(incomingByte == '#'){
-//          txtMsg = "";
-//          txtMsg += "#";
-//        }else if(incomingByte == '$'){
-//          Serial.println(txtMsg.substring(1).length());
-//          txtMsg = txtMsg.substring(0,1);
-//          blockcontent[15] = txtMsg.toInt();
-//          writeBlock(block, blockcontent);
-//          txtMsg = "";
-//        }else{
-//          if(txtMsg.indexOf('#') == 0){
-//            txtMsg += incomingByte;
-//          }
-//        }
     }
     
     readBlock(block, readbackblock);
