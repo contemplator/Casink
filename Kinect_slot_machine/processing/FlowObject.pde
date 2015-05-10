@@ -1,37 +1,4 @@
-PImage background_img;
-
-int image_width = 180;
-int image_height = 180;
-int floor = 800;
-int ceiling = 0;
-
-FlowObject left, middle, right;
-
-void setup(){
-  size(displayWidth, displayHeight);
-  println("displayWidth:" + displayWidth);
-  println("displayHeight:" + displayHeight);
-  
-  background_img = loadImage("background.png");  
-  background_img.resize(width, height);
-  
-  left = new FlowObject(240);
-  middle = new FlowObject(630);
-  right = new FlowObject(1020);
-}
-
-void draw(){
-  background(0);
-  left.flow();
-  left.display();
-  middle.flow();
-  middle.display();
-  right.flow();
-  right.display();
-  image(background_img,0,0);
-}
-
- class FlowObject { 
+class FlowObject { 
   PImage img1, img2, img3;
   int velocity;
   int margin_left;
@@ -84,12 +51,39 @@ void draw(){
     }
   }
   
+  void slow(){
+    while(true){
+      if(isRunning){
+        top1 += velocity;
+        top2 += velocity;
+        top3 += velocity;
+        if(top1 > floor){
+          top1 = ceiling;
+        }
+        if(top2 > floor){
+          top2 = ceiling;
+        }
+        if(top3 > floor){
+          top3 = ceiling;
+        }
+      }
+      
+      if(velocity >= 0.01){
+        velocity -= 0.01;
+      }
+      
+      if(abs(top1-380) <= 20 || abs(top2-380) <= 20 || abs(top3-380) <= 20){
+        result(top1, top2, top3);
+        isRunning = false;
+        return;
+      }
+    } 
+  }
+  
   void display(){
-    
     image(img1, margin_left, top1);
     image(img2, margin_left, top2);
     image(img3, margin_left, top3);
-    
   }
   
   void stop(){
@@ -122,22 +116,5 @@ void draw(){
       }
     }
     return new_array;
-  }
-}
-
-boolean sketchFullScreen() {
-  return true;
-}
-
-void mousePressed(){
-  if(left.isRunning == false && middle.isRunning == false &&
-      right.isRunning == false ){
-    left.isRunning = true;
-    middle.isRunning = true;
-    right.isRunning = true;
-  }else{
-    left.stop();
-    middle.stop();
-    right.stop();
   }
 }

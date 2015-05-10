@@ -31,15 +31,12 @@ LiquidCrystal_I2C lcd(0x27, 16, 2);
 int block=2;
 byte blockcontent[16];
 byte readbackblock[18];
-char name[6];
-char result[7];
-byte result2[7];
-
-char incomingByte;
-String txtMsg;
+long userid = 0;
 String username = "";
-String pre_username = "";
-String piece[3];
+long money = 0;
+String result = "";
+String currentData = "";
+String sendData = "";
 
 void setup() {
     Serial.begin(9600);
@@ -59,9 +56,6 @@ void loop(){
         
     if ( ! mfrc522.PICC_IsNewCardPresent()) {
 //        Serial.println("It is the same card.");
-        pre_username = "";
-            lcd.setCursor(0,1);
-    lcd.print(format_string(""));
         delay(500);
         return;
     }
@@ -71,42 +65,49 @@ void loop(){
         delay(500);
        	return;
     }
-
-    lcd.setCursor(0,1);
-    lcd.print(format_string("READY"));
-      
-    if (Serial.available() > 0) {
-        incomingByte = (char) Serial.read();
-        if(incomingByte == '#'){
-          txtMsg = "";
-          txtMsg += "#";
-        }else if(incomingByte == '$'){
-          writeToRfid();
-        }else{
-          if(txtMsg.indexOf('#') == 0){
-            txtMsg += incomingByte;
-          }
-        }
-    }
-}
-
-int writeBlock(int blockNumber, byte arrayAddress[]){
-    int largestModulo4Number=blockNumber/4*4;
-    int trailerBlock=largestModulo4Number+3;
-    if (blockNumber > 2 && (blockNumber+1)%4 == 0){
-        return 2;
-    }
-  
-    byte status = mfrc522.PCD_Authenticate(MFRC522::PICC_CMD_MF_AUTH_KEY_A, trailerBlock, &key, &(mfrc522.uid));
-  
-    if (status != MFRC522::STATUS_OK) {
-        return 3;//return "3" as error message
+    
+    readBlock(block, readbackblock);//read the block back
+    userid = readbackblock[8] + readbackblock[7]*255;
+    
+    for(int i=9; i<15; i++){
+      if(readbackblock[i] >= 48){
+        String name = String(i);
+        username += char(readbackblock[i]);
+      }
     }
     
-    status = mfrc522.MIFARE_Write(blockNumber, arrayAddress, 16);
-    if (status != MFRC522::STATUS_OK) {
-        return 4;//return "4" as error message
+    money = readbackblock[15] * 500;
+    
+    if(money < 50000){
+      result = "Poor man";
+    }else if(money> 50000 && money<100000){
+      result = "normal man";
+    }else{
+      result = "Rich man";
     }
+    
+    lcd.setCursor(0,0);
+    lcd.print(format_string("Are you " + username + " ?"));
+    lcd.setCursor(0,1);
+    lcd.print(format_string("You own " + String(money) + " ."));
+    delay(2000);
+    lcd.setCursor(0,0);
+    lcd.print(format_string("You are " + result + "."));
+    lcd.setCursor(0,1);
+    lcd.print(format_string("HaHaHa"));
+    delay(2000);
+    
+    currentData = "#" + String(userid) + ";" + String(money/500) + "$";
+    if(currentData != sendData){
+      Serial.print(currentData);
+      sendData = currentData;
+    }
+    
+    username = "";
+    money = 0;
+    result = "";
+    
+//    delay(500);
 }
 
 int readBlock(int blockNumber, byte arrayAddress[]) {
@@ -124,54 +125,6 @@ int readBlock(int blockNumber, byte arrayAddress[]) {
     if (status != MFRC522::STATUS_OK) {
         return 4;
     }
-    
-    delay(500);
-}
-
-void writeToRfid(){
-  int lastIndex = 0;
-  for(int i=0; i<3; i++){
-    if((txtMsg.indexOf(";", lastIndex)) != -1){
-      int index = txtMsg.indexOf(";", lastIndex+1);
-      piece[i] = txtMsg.substring(lastIndex+1, index);
-      lastIndex = index;
-    }
-  }
-  
-  // username
-  piece[1].toCharArray(result, 7);
-  delay(2000);
-  for(int i=0; i<sizeof(result); i++){
-      result2[i] = result[i];
-  }
-  for(int i=9; i<15; i++){
-      blockcontent[i] = result2[i-9];
-  }
-  // money
-  blockcontent[15] = piece[2].toInt();
-  // card id
-  int id = piece[0].toInt();
-  int group_id = 0;
-  int stored_id = 0;
-  if(id > 255){
-    group_id = id / 255;
-    stored_id = id % 255;
-  }else{
-    stored_id = id;
-  }
-  blockcontent[7] = group_id;
-  blockcontent[8] = stored_id;
-  writeBlock(block, blockcontent);
-
-  txtMsg = "";
-  for(int i=0; i<sizeof(result2); i++){
-    result[i] = 0;
-    result2[i] = 0;
-  }
-  
-  lcd.setCursor(0,0);
-  lcd.print(format_string("Write done"));
-  Serial.print("done");
 }
 
 String format_string(String string){

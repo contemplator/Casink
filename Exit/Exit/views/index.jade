@@ -2,28 +2,4 @@ extends layout
 
 block content
 	div(class="main")
-		h1= title
-		p Welcome to #{title}
-		form(class="form-horizontal")
-			div(class="form-group")
-				label(class="col-sm-4 control-label") ID
-				div(class="col-sm-5")
-					input(type="number" class="form-control" id="card_id" min="0" disabled)
-			div(class="form-group")
-				label(class="col-sm-4 control-label") Money
-				div(class="col-sm-5")
-					input(type="number" class="form-control" id="money" disable value="5000" disabled)
-			div(class="form-group")
-				label(class="col-sm-4 control-label") User Name
-				div(class="col-sm-5")
-					input(type="text" class="form-control" id="username" maxlength="6" placeholder="ex: Melody" onchange="checkName()")
-			div(class="form-group")
-				label(class="col-sm-4 control-label") Student ID
-				div(class="col-sm-5")
-					input(type="text" class="form-control" id="student_id" placeholder="ex: 100306020" maxlength="10" onchange="checkId()")
-			div(class="form-group")
-				label(class="col-sm-4 control-label") Department
-				div(class="col-sm-5")
-					input(type="text" class="form-control" id="department" placeholder="ex: 資訊管理學系" maxlength="10")
-			div(id="error_message")
-			button(class="btn btn-primary" onclick="checkForm()") Submit
+		img(id="projecter" src="images/test3.jpg")

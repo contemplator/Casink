@@ -11,7 +11,11 @@ $(function(){
 	query.limit(1);
 	query.find({
 		success: function(results) {
-			var max_card = results[0].get('card_id');
+			// console.log(results);
+			var max_card = 0;
+			if(results.length > 0){
+				max_card = results[0].get('card_id');
+			}
 			$("#card_id").val(max_card + 1);
 		},
 		error: function(error) {
