@@ -1,0 +1,8 @@
+/Users/idlefox/AndroidstudioProjects/BluetoothChat/Application/build/intermediates/classes/debug
+/Users/idlefox/AndroidstudioProjects/BluetoothChat/Application/build/intermediates/pre-dexed/debug/support-annotations-21.0.2-25cdbb5fbdde2583108ae0b1df95baf311d8a4c9.jar
+/Users/idlefox/AndroidstudioProjects/BluetoothChat/Application/build/intermediates/pre-dexed/debug/classes-98c4e239fafd12e0604336d924e21cb1c0994e98.jar
+/Users/idlefox/AndroidstudioProjects/BluetoothChat/Application/build/intermediates/pre-dexed/debug/classes-e4e23833d851570d504ba3c1c485fc898d65b3c6.jar
+/Users/idlefox/AndroidstudioProjects/BluetoothChat/Application/build/intermediates/pre-dexed/debug/bolts-android-1.2.0-97b23a44e70c0549efa9214446f1d3dbd1096056.jar
+/Users/idlefox/AndroidstudioProjects/BluetoothChat/Application/build/intermediates/pre-dexed/debug/internal_impl-21.0.2-399a2b55013b9e11fc001880d0126e46aef5f1d3.jar
+/Users/idlefox/AndroidstudioProjects/BluetoothChat/Application/build/intermediates/pre-dexed/debug/Parse-1.9.0-206f4f8b39dbffb7a652f6141569546619ca6157.jar
+/Users/idlefox/AndroidstudioProjects/BluetoothChat/Application/build/intermediates/pre-dexed/debug/classes-3fc465b16b36856f1c9514511e069ad348ebede9.jar

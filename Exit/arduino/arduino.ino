@@ -66,7 +66,7 @@ void loop(){
        	return;
     }
     
-    readBlock(block, readbackblock);//read the block back
+    readBlock(block, readbackblock); //read the block back
     userid = readbackblock[8] + readbackblock[7]*255;
     
     for(int i=9; i<15; i++){

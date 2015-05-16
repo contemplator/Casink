@@ -16,7 +16,7 @@ float md;
 float mt;
 
 void setup(){
-  size(640, 480);
+  size(displayWidth, displayHeight);
   movie1 = new Movie(this, "/Users/idlefox/Desktop/dice_anime.avi");
   movie1.loop();
   movie2 = new Movie(this, "/Users/idlefox/Desktop/dice_animationver.avi");

@@ -35,11 +35,11 @@ function initSocketIO(){
 function changeImage(data){
 	var money = parseInt(data.split(";")[1]);
 	if(money < 20){
-		$("#projecter").attr("src", "images/test1.JPG");
+		$("#projecter").attr("src", "images/01.png");
 	}else if(money >= 20 && money < 30){
-		$("#projecter").attr("src", "images/test2.JPG");
+		$("#projecter").attr("src", "images/01.png");
 	}else{
-		$("#projecter").attr("src", "images/test3.jpg");
+		$("#projecter").attr("src", "images/01.png");
 	}
 }
 

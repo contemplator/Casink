@@ -6,8 +6,9 @@ class FlowObject {
   int top1, top2, top3;
   int image_width = 180;
   int image_height = 180;
-  String[] imgs = {"white.png", "blue.png", "red.png"};
-  boolean isRunning;
+  private String[] imgs = {"white.png", "blue.png", "red.png"};
+  public String[] roses = {};
+  public boolean isRunning;
    
   FlowObject (int left) {  
     margin_left = left;
@@ -17,14 +18,18 @@ class FlowObject {
     
     int index = int(random(0, imgs.length));
     img1 = loadImage(imgs[index]);
+    addRoseRank(imgs[index]);
     imgs = remove(imgs, index);
+    
     
     index = int(random(imgs.length));
     img2 = loadImage(imgs[index]);
+    addRoseRank(imgs[index]);
     imgs = remove(imgs, index);
     
     index = int(random(imgs.length));
     img3 = loadImage(imgs[index]);
+    addRoseRank(imgs[index]);
     imgs = remove(imgs, index);
     
     img1.resize(image_width, image_height);
@@ -91,21 +96,31 @@ class FlowObject {
       flow();
       display();
       if(abs(top1-380) <= 20 || abs(top2-380) <= 20 || abs(top3-380) <= 20){
-        result(top1, top2, top3);
+        roses = result(top1, top2, top3);
         isRunning = false;
         return;
       }
     }
   }
   
-  void result(int t1, int t2, int t3){
-    int[] rank = {t1, t2, t3};
-    rank = sort(rank);
-    t1 = 110;
-    t2 = 380;
-    t3 = 650;
-    flow();
-    display();
+  String[] result(int t1, int t2, int t3){
+//    println(roses); 
+    int[] pre_order = {t1, t2, t3};
+//    println(rank);
+    int[] new_order = sort(pre_order);
+    String[] new_roses = {};
+    for(int i=0; i<new_order.length; i++){
+      for(int j=0; j<pre_order.length; j++){
+        if(new_order[i] == pre_order[j]){
+          new_roses = append(new_roses, roses[j]);
+        }
+      }
+    }
+    
+//    println("----Object-----");
+//    println(new_roses);
+    
+    return new_roses;
   }
   
   String[] remove(String array[], int index) {
@@ -116,5 +131,18 @@ class FlowObject {
       }
     }
     return new_array;
+  }
+  
+  void addRoseRank(String img){
+    if(img == "white.png"){
+      roses = append(roses, "white");
+//      println("white");
+//      println(roses);
+    }else if(img == "blue.png"){
+      roses = append(roses, "blue");
+    }else if(img == "red.png"){
+      roses = append(roses, "red");
+    }
+//    println(roses);
   }
 }

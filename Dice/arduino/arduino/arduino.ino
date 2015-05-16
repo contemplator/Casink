@@ -78,13 +78,13 @@ void loop(){
         
     if ( ! mfrc522.PICC_IsNewCardPresent()) {
 //        Serial.println("It is the same card.");
-        delay(300);
+//        delay(300);
         return;
     }
 
     if ( ! mfrc522.PICC_ReadCardSerial()) {
 //        Serial.println("Can't read the card.");
-        delay(100);
+//        delay(100);
        	return;
     }
     
@@ -331,7 +331,7 @@ int readBlock(int blockNumber, byte arrayAddress[]) {
     }
     
 //    Serial.println("block was read");
-    delay(500);
+//    delay(500);
 }
 
 String format_money(long m){
@@ -381,33 +381,51 @@ void countResult(String result){
     lcd.print(format_string("Brovo!"));
     lcd.setCursor(0,1);
     long earn = (b / 500) * 3 + pre_money;
-    lcd.print(earn * 500);
-    blockcontent[15] = pre_money+3;
-    writeBlock(block, blockcontent);
+    lcd.print(format_string("You earn " + format_money(earn * 500)));
+    writeToRfid(pre_money+3);
+//    delay(2000);
+//    blockcontent[15] = pre_money+3;
+//    writeBlock(block, blockcontent);
   }else if(r <= 3 && choice.toInt() == 7){
     lcd.setCursor(0, 0);
     lcd.print(format_string("Good!"));
     lcd.setCursor(0,1);
     long earn = (b / 500) * 1 + pre_money;
-    lcd.print(earn * 500);
-    blockcontent[15] = pre_money+1;
-    writeBlock(block, blockcontent);
+    lcd.print(format_string("You earn " + format_money(earn * 500)));
+    writeToRfid(pre_money+1);
+//    delay(2000);
+//    blockcontent[15] = pre_money+1;
+//    writeBlock(block, blockcontent);
   }else if(r >= 4 && choice.toInt() == 8){
     lcd.setCursor(0, 0);
     lcd.print(format_string("Good!"));
     lcd.setCursor(0,1);
     long earn = (b / 500) * 1 + pre_money;
-    lcd.print(earn * 500);
-    blockcontent[15] = pre_money+1;
-    writeBlock(block, blockcontent);
+    lcd.print(format_string("You earn " + format_money(earn * 500)));
+    writeToRfid(pre_money+1);
+//    delay(2000);
+//    blockcontent[15] = pre_money+1;
+//    writeBlock(block, blockcontent);
   }else{
     lcd.setCursor(0, 0);
     lcd.print(format_string("Try again"));
     lcd.setCursor(0,1);
     long earn = pre_money - (b / 500);
-    lcd.print(earn * 500);
-    blockcontent[15] = pre_money-1;
-    writeBlock(block, blockcontent);
+    lcd.print(format_string("You earn " + format_money(earn * 500)));
+    writeToRfid(pre_money-1);
+//    delay(2000);
+//    blockcontent[15] = pre_money-1;
+//    writeBlock(block, blockcontent);
   }
+}
+
+void writeToRfid(int money_from){
+  readBlock(block, readbackblock);
+  for(int i=0; i<16; i++){
+    blockcontent[i] = readbackblock[i];
+  }
+  blockcontent[15] = money_from;
+  writeBlock(block, blockcontent);
+  delay(5000);
 }
   
