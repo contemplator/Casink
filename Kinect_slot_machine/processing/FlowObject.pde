@@ -12,9 +12,9 @@ class FlowObject {
    
   FlowObject (int left) {  
     margin_left = left;
-    top1 = 110;
-    top2 = 380;
-    top3 = 650;
+    top1 = 130;
+    top2 = 400;
+    top3 = 670;
     
     int index = int(random(0, imgs.length));
     img1 = loadImage(imgs[index]);
@@ -82,7 +82,7 @@ class FlowObject {
         isRunning = false;
         return;
       }
-    } 
+    }
   }
   
   void display(){
