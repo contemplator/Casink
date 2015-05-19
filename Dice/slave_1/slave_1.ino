@@ -22,9 +22,13 @@
  SDA A4
  SCL A5
  
- BLE   Arduino
+ BLE Master
  TX    Pin2
  RX    Pin3
+ 
+ BLE Slave
+ TX    Pin0
+ RX    Pin1
 */
 
 #include <SPI.h>
@@ -34,13 +38,15 @@
 #include <Keypad.h>
 #include <SoftwareSerial.h>
 
-SoftwareSerial BTSerial(2, 3); // TX / RX
+SoftwareSerial BTSerial_slave(0,1); // bluetooth slave
+//SoftwareSerial BTSerial_master(2, 3); // bluetooteh master
+
+LiquidCrystal_I2C lcd(0x27,16,2);
 
 #define SS_PIN 10
 #define RST_PIN 5
 MFRC522 mfrc522(SS_PIN, RST_PIN);
 MFRC522::MIFARE_Key key;
-LiquidCrystal_I2C lcd(0x27,16,2);
 
 const byte rows = 4; //four rows
 const byte cols = 3; //three columns
@@ -71,23 +77,25 @@ const int STATUS_USERIN = 1;
 const int STATUS_CHOICE = 2;
 const int STATUS_MONEY = 3;
 const int STATUS_WAIT = 4;
+String msgBLE;
 
 void setup() {
-    Serial.begin(9600);
-    SPI.begin();
-    mfrc522.PCD_Init();        
-    for (byte i = 0; i < 6; i++) {
-        key.keyByte[i] = 0xFF;
-    }
-    BTSerial.begin(9600);
-    lcd.init();
-    lcd.backlight();
-    lcd.setCursor(0,0);
-    lcd.print("Device is ready");
-    game_status = STATUS_NOUSER;
+  Serial.begin(9600);
+  SPI.begin();
+  mfrc522.PCD_Init();        
+  for (byte i = 0; i < 6; i++) {
+      key.keyByte[i] = 0xFF;
+  }
+  BTSerial_slave.begin(9600);
+//  BTSerial_master.begin(9600);
+  lcd.init();
+  lcd.backlight();
+  lcd.setCursor(0,0);
+  lcd.print("Device is ready");
+  game_status = STATUS_NOUSER;
 }
 
-void loop(){
+void loop() {
   mfrc522.PCD_Init();
       
   if ( ! mfrc522.PICC_IsNewCardPresent()) {
@@ -100,29 +108,10 @@ void loop(){
   }
 
   if ( ! mfrc522.PICC_ReadCardSerial()) {
-//        Serial.println("Can't read the card.");
     delay(300);
     return;
   }
-    
-    // get the data from processing
-//    if (Serial.available() > 0) {
-//        incomingByte = (char) Serial.read();
-//        Serial.println(incomingByte);
-//        if(incomingByte == 'R'){
-//            txtMsg = "";
-//            txtMsg += "R";
-//        }else if(incomingByte == 'T'){
-//          // Get the result number
-//          txtMsg = txtMsg.substring(1);
-//          countResult(txtMsg);
-//        }else{
-//            if(txtMsg.indexOf('R') == 0){
-//                txtMsg += incomingByte;
-//            }
-//        }
-//    }
-//  Serial.println(game_status);  
+  
   if(game_status == 0){
     username = "";
     readBlock(block, readbackblock);
@@ -134,7 +123,7 @@ void loop(){
     }
     game_status = STATUS_USERIN;
   }
-    
+  
   char key_input = keypad.getKey();
     
   if(game_status == STATUS_USERIN){
@@ -145,14 +134,12 @@ void loop(){
     String money = format_money(pre_money*500);
     lcd.setCursor(0,1);
     lcd.print(money);
-//      Serial.println(key_input);
     if(key_input == '#'){
       key_input = NO_KEY;
       game_status = STATUS_CHOICE;
     }
   }
-    
-//    
+  
   if(game_status == STATUS_CHOICE){
     lcd.setCursor(0,0);
     lcd.print("Type your choice");
@@ -197,7 +184,6 @@ void loop(){
           lcd.print("Wrong choice");
           break;
       }
-//      key_input = NO_KEY;
     }
     if(choice != ""){
       lcd.setCursor(0,1);
@@ -210,7 +196,7 @@ void loop(){
       }
     }
   }
-      
+  
   if(game_status == STATUS_MONEY){
     
     lcd.setCursor(0,0);
@@ -272,7 +258,6 @@ void loop(){
         if((bet_money.toInt() % 500) == 0){
           game_status = STATUS_WAIT;
           key_input = NO_KEY;
-          waitResult();
         }else{
           lcd.setCursor(0,0);
           lcd.print(format_string("500 per unit"));
@@ -293,21 +278,13 @@ void loop(){
     lcd.setCursor(0,1);
     String info = choice + ":" + bet_money;
     lcd.print(format_string(info));
-    if (Serial.available() > 0) {
-      incomingByte = (char) Serial.read();
-      if(incomingByte == 'R'){
-          txtMsg = "";
-          txtMsg += "R";
-      }else if(incomingByte == 'T'){
-        // Get the result number
-        int index_R = txtMsg.indexOf("R");
-        txtMsg = txtMsg.substring(index_R+1,index_R+2);
-        countResult(txtMsg);
-      }else{
-          if(txtMsg.indexOf('R') == 0){
-              txtMsg += incomingByte;
-          }
-      }
+    
+    if(BTSerial_slave.available()){
+      char tmpChar = BTSerial_slave.read();
+      msgBLE += tmpChar;
+      lcd.setCursor(0,0);
+      lcd.print(format_string("Result is: " + msgBLE));
+      countResult(msgBLE);
     }
     
     if(key_input == '#'){
@@ -320,28 +297,19 @@ int writeBlock(int blockNumber, byte arrayAddress[]){
     int largestModulo4Number=blockNumber/4*4;
     int trailerBlock=largestModulo4Number+3;
         if (blockNumber > 2 && (blockNumber+1)%4 == 0){
-//            Serial.print(blockNumber);
-//            Serial.println(" is a trailer block:");
             return 2;
         }
-//    Serial.print(blockNumber);
-//    Serial.println(" is a data block:");
   
     byte status = mfrc522.PCD_Authenticate(MFRC522::PICC_CMD_MF_AUTH_KEY_A, trailerBlock, &key, &(mfrc522.uid));
   
     if (status != MFRC522::STATUS_OK) {
-//        Serial.print("PCD_Authenticate() failed: ");
-//        Serial.println(mfrc522.GetStatusCodeName(status));
         return 3;//return "3" as error message
     }
     
     status = mfrc522.MIFARE_Write(blockNumber, arrayAddress, 16);
     if (status != MFRC522::STATUS_OK) {
-//        Serial.print("MIFARE_Write() failed: ");
-//        Serial.println(mfrc522.GetStatusCodeName(status));
         return 4;//return "4" as error message
     }
-//    Serial.println("block was written");
 }
 
 int readBlock(int blockNumber, byte arrayAddress[]) {
@@ -351,31 +319,21 @@ int readBlock(int blockNumber, byte arrayAddress[]) {
     byte status = mfrc522.PCD_Authenticate(MFRC522::PICC_CMD_MF_AUTH_KEY_A, trailerBlock, &key, &(mfrc522.uid));
   
     if (status != MFRC522::STATUS_OK) {
-//        Serial.print("PCD_Authenticate() failed (read): ");
-//        Serial.println(mfrc522.GetStatusCodeName(status));
         return 3;//return "3" as error message
     }
     
     byte buffersize = 18;//we need to define a variable with the read buffer size, since the MIFARE_Read method below needs a pointer to the variable that contains the size... 
     status = mfrc522.MIFARE_Read(blockNumber, arrayAddress, &buffersize);//&buffersize is a pointer to the buffersize variable; MIFARE_Read requires a pointer instead of just a number
     if (status != MFRC522::STATUS_OK) {
-//        Serial.print("MIFARE_read() failed: ");
-//        Serial.println(mfrc522.GetStatusCodeName(status));
         return 4;
     }
-    
-//    Serial.println("block was read");
-//    delay(500);
 }
 
 String format_money(long m){
-//  Serial.println(money);
   String final = "$";
   String money = String(m);
-//  Serial.println(money);
   int length = money.length();
   if(length > 6){
-//    Serial.println("6");
     money = money.substring(0, (length-6))+ "," + money.substring((length-6), (length-3)) + "," + money.substring((length-3), length);
   }else if(length > 3){
     money = money.substring(0, (length-3)) + "," + money.substring((length-3), (length));
@@ -395,16 +353,12 @@ String format_string(String string){
   return string;
 }
 
-void waitResult(){
-  Serial.println("S");
-}
-
 void countResult(String result){
-  BTSerial.print(result);
+//  BTSerial_master.print(result);
   
   lcd.setCursor(0,0);
   lcd.print(format_string("Result is: " + result));
-  Serial.println(result);
+//  Serial.println(result);
   delay(2000);
   int r = result.toInt();
   int c = choice.toInt();
@@ -451,6 +405,6 @@ void writeToRfid(int money_from){
   
   bet_money = "";
   choice = "";
+  msgBLE = "";
   game_status = STATUS_NOUSER;
 }
-  

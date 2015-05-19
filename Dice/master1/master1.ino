@@ -151,8 +151,7 @@ void loop(){
       game_status = STATUS_CHOICE;
     }
   }
-    
-//    
+      
   if(game_status == STATUS_CHOICE){
     lcd.setCursor(0,0);
     lcd.print("Type your choice");
@@ -404,7 +403,7 @@ void countResult(String result){
   
   lcd.setCursor(0,0);
   lcd.print(format_string("Result is: " + result));
-  Serial.println(result);
+//  Serial.println(result);
   delay(2000);
   int r = result.toInt();
   int c = choice.toInt();
