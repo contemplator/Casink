@@ -71,39 +71,46 @@ void loop(){
   if(new_user == false){
     if (Serial.available() > 0) {
       incomingByte = (char) Serial.read();
-      if(incomingByte == 'W'){
-        addMoney();
-      }else if(incomingByte == 'L'){
-        minusMoney();
+//      Serial.println(incomingByte);
+      if(incomingByte == 'W' || incomingByte == 'L'){
+        msg += incomingByte;
+      }else if(incomingByte == 'E'){
+        countResult();
+//        minusMoney();
+//        addMoney();
+      }else{
+        msg += incomingByte;
       }
     }
   }
 }
 
-void addMoney(){
+void addMoney(int bet){
   // add 5*500 dollars into user's card
   digitalWrite(2, HIGH);
   readBlock(block, readbackblock);
   for(int i=0; i<sizeof(blockcontent); i++){
     blockcontent[i] = readbackblock[i];
   }
-  blockcontent[15] += 5;
+  blockcontent[15] += (bet*5);
   writeBlock(block, blockcontent);
   digitalWrite(13, HIGH);
   new_user = true;
+  msg = "";
 }
 
-void minusMoney(){
+void minusMoney(int bet){
   // miuns 1*500 dollars from user's card
   digitalWrite(2, LOW);
   readBlock(block, readbackblock);
   for(int i=0; i<sizeof(blockcontent); i++){
     blockcontent[i] = readbackblock[i];
   }
-  blockcontent[15] -= 1;
+  blockcontent[15] -= bet;
   writeBlock(block, blockcontent);
   digitalWrite(13, LOW);
   new_user = true;
+  msg = "";
 }
 
 int writeBlock(int blockNumber, byte arrayAddress[]){
@@ -140,4 +147,18 @@ int readBlock(int blockNumber, byte arrayAddress[]) {
   if (status != MFRC522::STATUS_OK) {
     return 4;
   }
+}
+
+void countResult(){
+  boolean isWin = false;
+  if(msg.indexOf("W") >= 0){
+    isWin = true;
+  }
+  int bet = msg.substring(1).toInt();
+  if(isWin == true){
+    addMoney(bet);
+  }else{
+    minusMoney(bet);
+  }
+  Serial.println(msg);
 }
