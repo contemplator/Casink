@@ -1,6 +1,6 @@
 // BLE   Arduino
-// TX    Pin5
-// RX    Pin6
+// TX    Pin2
+// RX    Pin3
 
 /* 
  * LCD  Arduino
@@ -45,6 +45,8 @@ SoftwareSerial BTSerial(2,3);
 
 byte cmd[MAX_BTCMDLEN]; // received 128 bytes from an Android system
 int len = 0; // received command length
+
+long money = 0;
 
 void setup() {
   Serial.begin(9600); // Arduino起始鮑率：9600
@@ -91,16 +93,18 @@ void loop() {
   
   // first time read the data in RFID
   readBlock(block, readbackblock); //read the block back
+  money = long(readbackblock[15]) * 500;
   lcd.setCursor(0, 0);
   lcd.print(format_string("Now, you have:"));
   lcd.setCursor(0, 1);
-  lcd.print(format_string(String(readbackblock[15]*500)));
+  lcd.print(format_string(format_money(money)));
   
   char str[MAX_BTCMDLEN];
   int insize, ii;  
   int tick=0;
   while ( tick<MAX_BTCMDLEN ) { // 因為包率同為9600, Android送過來的字元可能被切成數份
     if ( (insize=(BTSerial.available()))>0 ){ // 讀取藍牙訊息
+//      Serial.println(BTSerial.read());
       for ( ii=0; ii<insize; ii++ ){
         cmd[(len++)%MAX_BTCMDLEN]=char(BTSerial.read());
       }
@@ -116,6 +120,7 @@ void loop() {
     for(int i=0; i<MAX_BTCMDLEN; i++){
       if(cmd[i] != 0){
         receive_data += char(cmd[i]);
+//        Serial.println(receive_data);
       }
     }
     
@@ -145,11 +150,17 @@ void writeToRFID(String data){
   for(int i=0; i<sizeof(blockcontent); i++){
     blockcontent[i] = readbackblock[i];
   }
-  blockcontent[15] = blockcontent[15] + money;
-  writeBlock(block, blockcontent);
-
-  lcd.setCursor(0,0);
-  lcd.print(format_string("Write done"));
+  if((blockcontent[15] + money) > 255){
+    lcd.setCursor(0, 0);
+    lcd.print(format_string("Too much money!"));
+    BTSerial.write("#");
+  }else{
+    blockcontent[15] = blockcontent[15] + money;
+    writeBlock(block, blockcontent);
+    lcd.setCursor(0,0);
+    lcd.print(format_string("Write done"));
+    BTSerial.write("$");
+  }
 //  Serial.print("done");
   delay(3000);
 }
@@ -198,4 +209,21 @@ String format_string(String string){
     }
   }
   return string;
+}
+
+String format_money(long m){
+//  Serial.println(money);
+  String final = "$";
+  String money = String(m);
+//  Serial.println(money);
+  int length = money.length();
+  if(length > 6){
+//    Serial.println("6");
+    money = money.substring(0, (length-6))+ "," + money.substring((length-6), (length-3)) + "," + money.substring((length-3), length);
+  }else if(length > 3){
+    money = money.substring(0, (length-3)) + "," + money.substring((length-3), (length));
+  }
+  final = final + money;
+  final = format_string(final);
+  return final;
 }

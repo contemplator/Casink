@@ -160,15 +160,17 @@ void startGame(){
     
     if(left.isRunning == false && middle.isRunning == false &&
       right.isRunning == false ){
-      
-        left = new FlowObject(375);
-        middle = new FlowObject(630);
-        right = new FlowObject(880);
-        left.isRunning = true;
-        middle.isRunning = true;
-        right.isRunning = true;
-        player.rewind();
-        player.play();
+        
+        if(money > 0){
+          left = new FlowObject(375);
+          middle = new FlowObject(630);
+          right = new FlowObject(880);
+          left.isRunning = true;
+          middle.isRunning = true;
+          right.isRunning = true;
+          player.rewind();
+          player.play();
+        }
     }else{
       left.stop();
       middle.stop();
