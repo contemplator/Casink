@@ -1,26 +1,42 @@
 extends layout
 
 block content
+	script(type='text/javascript', src="/javascripts/jquery.min.js")
+	script(type='text/javascript', src="/javascripts/bootstrap.js")
 	script(type='text/javascript', src="/javascripts/rank.js")
 	link(rel='stylesheet', href='/stylesheets/style.css')
+	link(rel='stylesheet', href='/stylesheets/bootstrap.css')
+	link(rel='stylesheet', href='/stylesheets/bootstrap-theme.css')
 
-	div(class="main")
-		h1 Welcome to Casink
-		table(id="personal_rank" class="table_rank")
-			caption personal_rank
-			tbody
-				tr
-					td name
-					td money
-				tr
-					td hi
-					td 1000
-		table(id="department_rank" class="table_rank")
-			caption department_rank
-			tbody
-				tr
-					td hi
-					td hi2
-				tr
-					td col3
-					td col4
+	div(class="container-fluid")
+		div(class="row")
+			div(id="title" class="col-md-12") 
+				h1(class="title") Casink Top 10
+
+			div(class="col-md-6")
+				h1(class="title") Personal Rank
+				table(id="personal_rank")
+
+			div(class="col-md-6")
+				h1(class="title") Department Rank
+				table(id="department_rank")
+
+		//- h1 Welcome to Casink
+		//- table(id="personal_rank" class="table_rank")
+		//- 	caption personal_rank
+		//- 	tbody
+		//- 		tr
+		//- 			td name
+		//- 			td money
+		//- 		tr
+		//- 			td hi
+		//- 			td 1000
+		//- table(id="department_rank" class="table_rank")
+		//- 	caption department_rank
+		//- 	tbody
+		//- 		tr
+		//- 			td hi
+		//- 			td hi2
+		//- 		tr
+		//- 			td col3
+		//- 			td col4

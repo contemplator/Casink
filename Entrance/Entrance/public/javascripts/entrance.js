@@ -2,6 +2,8 @@ window.onload = function() {
 	initSocketIO();
 };
 
+var from_arduino = "";
+
 $(function(){
 	Parse.initialize("GxQAcWbTF3xpE9zAgmjYHtdBAgY6Bg7nvkuFbZnO", "1kFaB7tM2V4kDLuLvDxSmgaY4vmg1iNJFPZvB8mR");
 
@@ -67,7 +69,7 @@ function sendArduino(){
 function checkForm(){
 	event.preventDefault();
 	if($("#username").val() != "" && $("#student_id").val() != ""){
-		newUser();
+		// newUser();
 		sendArduino();
 	}
 }
@@ -91,9 +93,11 @@ function checkId(){
 	if(id_val.length == 8){
 		var detemine_code = id_val.substring(2,5);
 		$("#department").val(department[detemine_code]);
-	}else if(id_val.length >= 9){
+		$("#error_message").text("");
+	}else if(id_val.length == 9){
 		var detemine_code = id_val.substring(3,6);
 		$("#department").val(department[detemine_code]);
+		$("#error_message").text("");
 	}else{
 		$("#student_id").parent().parent().attr("class", "form-group");
 		$("#error_message").text("請確認你的學號長度是否正常");
@@ -112,5 +116,15 @@ function initSocketIO(){
 	iosocket = io.connect();
     iosocket.on('update', function (recievedData) {
 		console.log("recievedData" + recievedData.fromArduino);
+		if(recievedData.fromArduino.indexOf("d") >= 0){
+			from_arduino = recievedData.fromArduino;
+		}else{
+			from_arduino += recievedData.fromArduino;
+		}
+
+		if(from_arduino == "done"){
+			newUser();
+			from_arduino = "";
+		}
 	});
 }

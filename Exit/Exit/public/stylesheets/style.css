@@ -1,6 +1,14 @@
 body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+	background-image: url("/images/background.jpg");
+	background-size: 100% 900px;
+	background-repeat: no-repeat;
 }
-.main{
+
+.title{
+	color: #FFFFFF;
+	/*background: #FFFFFF;*/
+}
+
+table{
+	width: 100%;
 }

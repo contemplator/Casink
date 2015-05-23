@@ -13,7 +13,7 @@ function getPersonalRank(){
 	query.find({
 		success: function(results) {
 			// console.log(results);
-			var html = "<caption>Personal Rank</caption>" + "<tr>" +
+			var html = "<tr>" +
 				"<th>username</td>" + 
 				"<th>money</td>" + 
 				"<th>department</td>" + "</tr>";
@@ -31,7 +31,7 @@ function getPersonalRank(){
 				// console.log(i + ":" + card + ":" + money);
 			}
 
-			$("#personal_rank").html(html);
+			$("#personal_rank").append(html);
 		},
 		error: function(error) {
 			console.log("Error: " + error.code + " " + error.message);
@@ -88,7 +88,7 @@ function getDepartmentRank(){
 		
 		return [new_departments, moneys];
 	}).then(function(data){
-		var html = "<caption>Department Rank</caption>" + "<tr>" +
+		var html = "<tr>" +
 			"<th>department</td>" + 
 			"<th>money</td>" + "</tr>";
 		for(var i=0; i<data[0].length; i++){

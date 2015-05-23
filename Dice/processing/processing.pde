@@ -33,7 +33,7 @@ void setup(){
   movie6 = new Movie(this, "dice_anime_six.avi");
   movie6.noLoop();
 
-  port = new Serial(this, "/dev/tty.usbmodem1421", 9600);
+  port = new Serial(this, "/dev/tty.usbmodem1411", 9600);
   port.bufferUntil('\n');
   
   // video block

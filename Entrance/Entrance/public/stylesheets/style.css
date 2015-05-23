@@ -1,9 +1,24 @@
 body {
-  padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  background: url("../images/background.jpg");
 }
 .main{
 	width: 60%;
 	text-align: center;
 	margin: 0px auto;
+	margin-top: 10%;
+	color: white;
+}
+.main > h1 {
+	font-size: 5em;
+}
+.main > p{
+	color: #aaaaaa;
+	font-size: 2em;
+}
+.control-label{
+	font-size: 2em;
+}
+.input-middle{
+	margin-top: 7px;
 }

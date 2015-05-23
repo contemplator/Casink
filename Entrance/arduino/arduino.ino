@@ -59,6 +59,10 @@ void loop(){
         
     if ( ! mfrc522.PICC_IsNewCardPresent()) {
 //        Serial.println("It is the same card.");
+        lcd.setCursor(0,0);
+        lcd.print(format_string("Device is ready"));
+        lcd.setCursor(0,1);
+        lcd.print(format_string(""));
         delay(500);
         return;
     }
