@@ -1,13 +1,16 @@
+body{
+	overflow-y:hidden;
+}
 #canvas{
 	position: relative;
 	margin:0px auto;
 	margin-top: 93px;
 }
 #white1, #white2, #white3 {
-	background-image: url(https://db.tt/MMdJRgFi);
+	background-image: url("../resources/slot_white.png");
 	background-size: 100% 100%;
 	float:left;
-	margin-top:12%;
+	margin-top:1%;
 	width:25%;
 	height:46%;
 	text-align: center;
@@ -23,7 +26,7 @@
 	width: 100%;
 }
 #black {
-	background-image: url(https://db.tt/sB5zOOQk);
+	background-image: url("../resources/slot_black.png");
 	position: absolute;
 	background-size: 100% 100%;
 	width: 100%;
@@ -32,14 +35,15 @@
 	left: 0px;
 }
 #title{
-	position: absolute;
-	top: 10%;
-	left: 40%;
+	position: relative;
+	margin-top: 58px;
 	color: #FFFFFF;
-	width: 20%;
-	font-size: 44px;
+	width: 100%;
+	font-size: 5em;
 	text-align: center;
-	font-family: 'Lobster';
+	font-family: 'Codystar', cursive;
+	font-weight: bold;
+	z-index: 100;
 }
 #total{
 	position: absolute;

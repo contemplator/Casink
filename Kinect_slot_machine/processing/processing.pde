@@ -11,8 +11,8 @@ PImage background_img;
 
 int image_width = 180;
 int image_height = 180;
-int floor = 800;
-int ceiling = 0;
+int floor = 500;
+int ceiling = 100;
 
 FlowObject left, middle, right;
 
@@ -26,7 +26,7 @@ static final int DEBOUNCE_DELAY = 5000;
 
 int money = 0;
 int bet = 500;
-String result = "Congraduation";
+String result = "Casink";
 boolean handup = false;
 boolean currentHand = false;
 boolean handmiddle1 = false;
@@ -35,7 +35,8 @@ boolean currentlHand = false;
 boolean isUser = false;
 
 void setup(){
-  size(displayWidth, displayHeight);
+//  size(displayWidth, displayHeight);
+  size(800, 600);
   
   port = new Serial(this, "/dev/tty.usbmodem1411", 9600);
   port.bufferUntil('\n');
@@ -50,7 +51,7 @@ void setup(){
   
   context.enableDepth();
   context.enableUser();
-  context.setMirror(false);
+  context.setMirror(true);
   
   background_img = loadImage("background.png");
   background_img.resize(width, height);
@@ -58,15 +59,15 @@ void setup(){
   minim = new Minim(this);
   player = minim.loadSnippet("main.mp3");
   
-  left = new FlowObject(375);
-  middle = new FlowObject(630);
-  right = new FlowObject(880);
+  left = new FlowObject(215);
+  middle = new FlowObject(355);
+  right = new FlowObject(495);
   smooth();
   textSize(32);
 }
 
 void draw(){
-  println(mouseX + ":" + mouseY);
+//  println(mouseY);
   context.update(); // update kinect data
   background(255);
   
@@ -84,7 +85,7 @@ void draw(){
   middle.display();
   right.flow();
   right.display();
-  image(background_img,0,0); // use the background image to cover the roses
+//  image(background_img,0,0); // use the background image to cover the roses
   
   // display isUser
   drawLight();
@@ -94,18 +95,18 @@ void draw(){
 
 void drawSkeleton(int userId){
   PVector position_shoulder = new PVector();
-  context.getJointPositionSkeleton(userId, SimpleOpenNI.SKEL_RIGHT_SHOULDER, position_shoulder);
+  context.getJointPositionSkeleton(userId, SimpleOpenNI.SKEL_LEFT_SHOULDER, position_shoulder);
 //  fill(255, 0, 0);
 //  text(position_shoulder.y, 10, 90);
   PVector position_hand = new PVector();
-  context.getJointPositionSkeleton(userId, SimpleOpenNI.SKEL_RIGHT_HAND, position_hand);
+  context.getJointPositionSkeleton(userId, SimpleOpenNI.SKEL_LEFT_HAND, position_hand);
 //  fill(255, 0, 0);
 //  text(position_hand.y, 10,180);
   PVector position_lhand = new PVector();
-  context.getJointPositionSkeleton(userId, SimpleOpenNI.SKEL_LEFT_HAND, position_lhand);
+  context.getJointPositionSkeleton(userId, SimpleOpenNI.SKEL_RIGHT_HAND, position_lhand);
   PVector position_middle = new PVector();
   context.getJointPositionSkeleton(userId, SimpleOpenNI.SKEL_TORSO, position_middle);
-  fill(255, 0, 0);
+//  fill(255, 0, 0);
   
 //  fill(255, 0, 0);
   
@@ -161,16 +162,16 @@ void startGame(){
     if(left.isRunning == false && middle.isRunning == false &&
       right.isRunning == false ){
         
-        if(money > 0){
-          left = new FlowObject(375);
-          middle = new FlowObject(630);
-          right = new FlowObject(880);
+//        if(money > 0){
+          left = new FlowObject(215);
+          middle = new FlowObject(355);
+          right = new FlowObject(495);
           left.isRunning = true;
           middle.isRunning = true;
           right.isRunning = true;
           player.rewind();
           player.play();
-        }
+//        }
     }else{
       left.stop();
       middle.stop();
@@ -182,10 +183,10 @@ void startGame(){
           String[] order2 = middle.roses;
           String[] order3 = right.roses;
           
-//          println("-----Main-----");
-//          println(order1);
-//          println(order2);
-//          println(order3);
+          println("-----Main-----");
+          println(order1);
+          println(order2);
+          println(order3);
           
           if(order1[1] == order2[1] && order2[1] == order3[1]){
             println("Win");
@@ -255,54 +256,59 @@ void drawLight(){
   if(!isUser){
     fill(255, 0, 0, 225);
     noStroke();
-    ellipse(115, 95, 115, 115);
+    ellipse(75, 55, 65, 65);
     fill(252, 222, 40, 80);
     noStroke();
-    ellipse(115, 240, 115, 115);
+    ellipse(75, 145, 65, 65);
     fill(0, 255, 0, 80);
     noStroke();
-    ellipse(115, 385, 115, 115);
+    ellipse(75, 235, 65, 65);
   }else if(isUser && left.isRunning == false && 
     middle.isRunning == false && right.isRunning == false){
     fill(255, 0, 0, 80);
     noStroke();
-    ellipse(115, 95, 115, 115);
+    ellipse(75, 55, 65, 65);
     fill(252, 222, 40, 255);
     noStroke();
-    ellipse(115, 240, 115, 115);
+    ellipse(75, 145, 65, 65);
     fill(0, 255, 0, 80);
     noStroke();
-    ellipse(115, 385, 115, 115);
+    ellipse(75, 235, 65, 65);
   }else if(left.isRunning == true || 
     middle.isRunning== true || right.isRunning == true){
     fill(255, 0, 0, 80);
     noStroke();
-    ellipse(115, 95, 115, 115);
+    ellipse(75, 55, 65, 65);
     fill(252, 222, 40, 80);
     noStroke();
-    ellipse(115, 240, 115, 115);
+    ellipse(75, 145, 65, 65);
     fill(0, 255, 0, 225);
     noStroke();
-    ellipse(115, 385, 115, 115);
+    ellipse(75, 235, 65, 65);
   }
 }
 
 void drawMoney(int m, int b){
+  int m_length = str(m).length();
+  int left = 285-m_length*6;
+  int b_length = str(b).length();
+  int right = 527-b_length*6;
   fill(0,0,0);
-  textSize(32);
-  text(m, 465, 670);
+  textSize(24);
+  text(m, left, 450);
   fill(0,0,0);
-  textSize(32);
-  text(b, 940, 670);
+  textSize(24);
+  text(b, right, 450);
 }
 
 void drawResult(String r){
-  r = "Try again";
+//  println(mouseX);
+//  r = "Test";
   int s_length = r.length();
-  int left = 710-s_length*8;
+  int left = 390-s_length*6;
   fill(0,0,0);
-  textSize(32);
-  text(r, left, 279);
+  textSize(24);
+  text(r, left, 188);
 }
 
 void addBet(){

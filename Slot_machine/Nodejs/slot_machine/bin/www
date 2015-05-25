@@ -12,7 +12,7 @@ var SerialPort = require("serialport").SerialPort;
 
 var socketServer;
 var serialPort;
-var portName = '/dev/tty.usbmodem1421'; //change this to your Arduino port
+var portName = '/dev/tty.usbmodem1411'; //change this to your Arduino port
 var sendData = "";
 var currentValue = "0";
 
@@ -112,10 +112,11 @@ function initSocketIO(httpServer,debug){
     //  socket.emit('updateData',{pollOneValue:data}); // send data on the updateDate channel
     // });
     // send value to arduino
-    // socket.on('buttonval', function(data) {
-    //  serialPort.write(data + 'E');
-    // });
+    socket.on('buttonval', function(data) {
+     serialPort.write('B' + data + 'E');
+     console.log("send to arduino" + data);
     });
+  });
 }
 
 // Listen to serial port

@@ -44,7 +44,7 @@ SoftwareSerial BTSerial_slave(0,1); // bluetooth slave
 LiquidCrystal_I2C lcd(0x27,16,2);
 
 #define SS_PIN 10
-#define RST_PIN 5
+#define RST_PIN 9
 MFRC522 mfrc522(SS_PIN, RST_PIN);
 MFRC522::MIFARE_Key key;
 
@@ -103,6 +103,7 @@ void loop() {
     lcd.print(format_string("Did't detect card"));
     lcd.setCursor(0,1);
     lcd.print(format_string(""));
+    game_status = STATUS_NOUSER;
     delay(300);
     return;
   }
@@ -112,7 +113,7 @@ void loop() {
     return;
   }
   
-  if(game_status == 0){
+  if(game_status == STATUS_NOUSER){
     username = "";
     readBlock(block, readbackblock);
     for(int i=9; i<15; i++){
@@ -121,12 +122,15 @@ void loop() {
         username += c;
       }
     }
+    Serial.println("DSA");
     game_status = STATUS_USERIN;
   }
   
   char key_input = keypad.getKey();
     
   if(game_status == STATUS_USERIN){
+    //-------------
+    BTSerial_slave.flush();
     String welcome = format_string("Welcome "+username);
     lcd.setCursor(0,0);
     lcd.print(welcome);
@@ -207,7 +211,7 @@ void loop() {
     switch(key_input){
       case '1':
         bet_money += "1";
-        
+        lcd.print(format_string(bet_money));
         break;
       case '2':
         bet_money += "2";
@@ -255,15 +259,24 @@ void loop() {
         lcd.setCursor(ml-1,1);
         break;}
       case '#':
-        if((bet_money.toInt() % 500) == 0){
-          game_status = STATUS_WAIT;
-          key_input = NO_KEY;
-        }else{
+        if((pre_money * 500) < (bet_money.toInt()) || pre_money == 0){
           lcd.setCursor(0,0);
-          lcd.print(format_string("500 per unit"));
+          lcd.print(format_string("No Money."));
           delay(1000);
           lcd.setCursor(0,0);
           lcd.print(format_string("bet money"));
+        }else{
+          if((bet_money.toInt() % 500) == 0){
+            game_status = STATUS_WAIT;
+            key_input = NO_KEY;
+//            waitResult();
+          }else{
+            lcd.setCursor(0,0);
+            lcd.print(format_string("500 per unit"));
+            delay(1000);
+            lcd.setCursor(0,0);
+            lcd.print(format_string("bet money"));
+          }
         }
         break;
       default:

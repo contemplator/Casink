@@ -1,14 +1,25 @@
 body {
-	background-image: url("/images/background.jpg");
+	/*background-image: url("/images/background.jpg");
 	background-size: 100% 900px;
-	background-repeat: no-repeat;
+	background-repeat: no-repeat;*/
 }
-
 .title{
 	color: #FFFFFF;
+	margin-top: 100px;
+	text-align: center;
 	/*background: #FFFFFF;*/
 }
-
+.sub-title{
+	color: #FFFFFF;
+	text-align: center;
+}
 table{
 	width: 100%;
+}
+#projecter{
+	width: 180%;
+	height: auto;
+	position: absolute;
+	top:-92px;
+	left:-160px;
 }

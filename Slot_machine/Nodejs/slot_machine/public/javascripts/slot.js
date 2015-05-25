@@ -1,52 +1,45 @@
 var gameStatus = "finish"; // finish, running, waiting, stopping, finish...
 
-// 玫瑰的圖檔
 var rose1 = "resources/white.png", 
 	rose2 = "resources/blue.png",
 	rose3 = "resources/red.png";
 
-// 計時器 setInterval
-// ***************
+// setInterval
 var as1, as2, as3, bs1, bs2, bs3, cs1, cs2, cs3;
-
-// ***************
+// 
 var rad = [[rose1, rose2, rose3],[rose1, rose2, rose3],[rose1, rose2, rose3]];
 // each rose status, false = stop, true = runing
-// ***************
 var af1 = false, af2 = false, af3 = false, bf1 = false, bf2 = false, bf3 = false, cf1 = false, cf2 = false, cf3 = false;
 // 記錄每一排最後的排列狀況
-// ***************
 var result1 = [], result2 = [], result3 = [];
 var chahge;
 
 $(document).ready(function(){
 	// loading the fruit images and position
-	$("#a1").css({top: 40, left: 245, position:'absolute', width: 150, height: 120});
+	$("#a1").css({top: -110, left: 250, position:'absolute', width: 150, height: 120});
 	$("#a1").html(getFruit(0));
-	$("#a2").css({top: 300, left: 245, position:'absolute', width: 150, height: 120});
+	$("#a2").css({top: 145, left: 250, position:'absolute', width: 150, height: 120});
 	$("#a2").html(getFruit(0));
-	$("#a3").css({top: 560, left: 245, position:'absolute', width: 150, height: 120});
+	$("#a3").css({top: 400, left: 250, position:'absolute', width: 150, height: 120});
 	$("#a3").html(getFruit(0));
 
-	$("#b1").css({top: 40, left: 640, position:'absolute', width: 150, height: 120});
+	$("#b1").css({top: -110, left: 650, position:'absolute', width: 150, height: 120});
 	$("#b1").html(getFruit(1));
-	$("#b2").css({top: 300, left: 640, position:'absolute', width: 150, height: 120});
+	$("#b2").css({top: 145, left: 650, position:'absolute', width: 150, height: 120});
 	$("#b2").html(getFruit(1));
-	$("#b3").css({top: 560, left: 640, position:'absolute', width: 150, height: 120});
+	$("#b3").css({top: 400, left: 650, position:'absolute', width: 150, height: 120});
 	$("#b3").html(getFruit(1));
 
-	$("#c1").css({top: 40, left: 1035, position:'absolute', width: 150, height: 120});
+	$("#c1").css({top: -110, left: 1040, position:'absolute', width: 150, height: 120});
 	$("#c1").html(getFruit(2));
-	$("#c2").css({top: 300, left: 1035, position:'absolute', width: 150, height: 120});
+	$("#c2").css({top: 145, left: 1040, position:'absolute', width: 150, height: 120});
 	$("#c2").html(getFruit(2));
-	$("#c3").css({top: 560, left: 1035, position:'absolute', width: 150, height: 120});
+	$("#c3").css({top: 400, left: 1040, position:'absolute', width: 150, height: 120});
 	$("#c3").html(getFruit(2));
 
-	// *************** 增加d and e
-
-	$("#total_content").text(formatNumber(total));
+	$("#total_content").text(formatNumber(0));
 	$("#bet_content").text(bet);
-	$("#swf_thorn_close").html('<embed class="thorn" base="." height="100%" loop="false" menu="true" play="true" src="resource/thorn.swf" type="application/x-shockwave-flash" width="580" wmode="transparent"></embed>');
+	$("#swf_thorn_close").html('<embed class="thorn" base="." height="100%" loop="false" menu="true" play="true" src="resources/thorn.swf" type="application/x-shockwave-flash" width="580" wmode="transparent"></embed>');
 	changeRose();
 	console.log("gameStatus: " + gameStatus);
 });
@@ -55,7 +48,13 @@ $(document).ready(function(){
 document.onkeydown=keyFunction;
 function keyFunction() {
 	if(event.keyCode == 13){
-		startGame();
+		$("#pull").html('<embed id="pull" width="0" height="0" src="resources/pull_voice.mp3" autostart="true"></embed>');
+		$("#swf_thorn_open").html('<embed class="thorn" base="." height="100%" loop="false" menu="true" play="true" src="resources/thorn_back.swf" type="application/x-shockwave-flash" width="580" wmode="transparent"></embed>');
+		$("#swf_thorn_close").html('');
+		setTimeout(function(){
+			$("#swf_thorn_open").html('');
+			startGame();
+		}, 1300);
 	}
 }
 
@@ -69,11 +68,12 @@ function startGame(){
 		clearInterval(chahge);
 		$("#swf_win").html('');
 		$("#victory").html('');
-
-		total -= bet;
-		$("#total_content").text(formatNumber(total));
+		$("#lose").html('');
+		$("#pull").html('');
+		money -= 1;
+		$("#total_content").text(formatNumber(money * 500));
 		$("#victory").html('');
-		$("#pull").html('<embed id="pull" width="0" height="0" src="resources/pull_voice.mp3" autostart="true"></embed>');
+		
 		rollFruit(1); // 開始轉動
 		gameStatus = "running";
 		console.log("gameStatus: " + gameStatus);
@@ -108,7 +108,6 @@ function getFruit(number){
 }
 
 // 轉動
-// ***************
 function rollFruit(s){
 	$("#scrolling").html('<embed width="0" height="0" src="resources/main_voice.mp3" autostart="true" loop="true"></embed>');
 
@@ -116,8 +115,8 @@ function rollFruit(s){
 	var timer1 = 10; // 每 20 毫秒動一次
 	var timer2 = 9; // 每 20 毫秒動一次
 	var timer3 = 10; // 每 20 毫秒動一次
-	var floor = 700; // 最低點
-	var ceiling = -100; // 最高點
+	var floor = 600; // 最低點
+	var ceiling = -200; // 最高點
 
 	// 開始轉動
 	as1 = setInterval(function(){roll1($("#a1"))}, timer1);
@@ -148,7 +147,7 @@ function rollFruit(s){
 		if(position_current >= floor){
 			position_current = ceiling;
 		}
-		object.css({top:(position_current + v1), left: 245, position:'absolute', width: 150, height: 120});
+		object.css({top:(position_current + v1), left: 250, position:'absolute', width: 150, height: 120});
 	}
 
 	function roll2(object){
@@ -157,7 +156,7 @@ function rollFruit(s){
 		if(position_current >= floor){
 			position_current = ceiling;
 		}
-		object.css({top:(position_current + v1), left: 640, position:'absolute', width: 150, height: 120});
+		object.css({top:(position_current + v1), left: 650, position:'absolute', width: 150, height: 120});
 	}
 
 	function roll3(object){
@@ -166,7 +165,7 @@ function rollFruit(s){
 		if(position_current >= floor){
 			position_current = ceiling;
 		}
-		object.css({top:(position_current + v1), left: 1035, position:'absolute', width: 150, height: 120});
+		object.css({top:(position_current + v1), left: 1040, position:'absolute', width: 150, height: 120});
 	}
 }
 
@@ -207,20 +206,23 @@ function stopFruit(){
 	var fruit_ay = [a1_y, a2_y, a3_y]; // 用來重新排列
 	var fruit_ranka = getFruitRank(fruit_ay, fruity_ranka, fruit_a); // 顯示重新排列的水果順序
 	var stop1Y = getStopY(fruit_ranka, result1);
-	console.log(fruit_ranka);
+	console.log("stop1Y: " + stop1Y);
+	// console.log("fruit_ranka: " + fruit_ranka);
 	// console.log(stop1Y);
 	var fruit_b = ["#b1", "#b2", "#b3"];
 	var fruity_rankb = sortFruit([b1_y, b2_y, b3_y]);
 	var fruit_by = [b1_y, b2_y, b3_y];
 	var fruit_rankb = getFruitRank(fruit_by, fruity_rankb, fruit_b);
 	var stop2Y = getStopY(fruit_rankb, result2);
-	console.log(fruit_rankb);
+	console.log("stop2Y: " + stop2Y);
+	// console.log("fruit_rankb:" + fruit_rankb);
 	var fruit_c = ["#c1", "#c2", "#c3"];
 	var fruity_rankc = sortFruit([c1_y, c2_y, c3_y]);
 	var fruit_cy = [c1_y, c2_y, c3_y];
 	var fruit_rankc = getFruitRank(fruit_cy, fruity_rankc, fruit_c);
 	var stop3Y = getStopY(fruit_rankc, result3);
-	console.log(fruit_rankc);
+	console.log("stop3Y: " + stop3Y);
+	// console.log("fruit_rankc: " + fruit_rankc);
 
 	// 初始化減速轉動的條件
 	var a = 0.1;
@@ -229,8 +231,8 @@ function stopFruit(){
 	var timer1 = 10;
 	var timer2 = 9;
 	var timer3 = 10;
-	var floor = 700;
-	var ceiling = -100;
+	var floor = 600;
+	var ceiling = -200;
 	
 	// 開始減速轉動
 	as1 = setInterval(function(){slowdown1(as1, $("#a1"), 0)}, timer1);
@@ -267,7 +269,7 @@ function stopFruit(){
 				}
 			}
 		}
-		object.css({top:(current_position.top + v1), left: 300, position:'absolute', width: 150, height: 120}); // for PD
+		object.css({top:(current_position.top + v1), left: 250, position:'absolute', width: 150, height: 120}); // for PD
 		// object.css({top:(current_position.top + v1), left: 245, position:'absolute', width: 150, height: 120}); // for RD
 	}
 
@@ -295,7 +297,7 @@ function stopFruit(){
 				}
 			}
 		}
-		object.css({top:(current_position.top + v1), left: 720, position:'absolute', width: 150, height: 120}); // for PD
+		object.css({top:(current_position.top + v1), left: 650, position:'absolute', width: 150, height: 120}); // for PD
 		// object.css({top:(current_position.top + v1), left: 640, position:'absolute', width: 150, height: 120}); // for RD
 	}
 
@@ -323,7 +325,7 @@ function stopFruit(){
 				}
 			}
 		}
-		object.css({top:(current_position.top + v1), left: 1140, position:'absolute', width: 150, height: 120}); // for PD
+		object.css({top:(current_position.top + v1), left: 1040, position:'absolute', width: 150, height: 120}); // for PD
 		// object.css({top:(current_position.top + v1), left: 1035, position:'absolute', width: 150, height: 120}); // for RD
 	}
 
@@ -341,12 +343,12 @@ function stopFruit(){
 
 // 判斷現在位置是否和指定位置距離不到 10
 function checkPosition(position){
-	if(Math.abs(position - 300) <= 10){
-		return 300;
-	}else if(Math.abs(position - 560) <= 10){
-		return 560;
-	}else if(Math.abs(position - 40) <= 10){
-		return 40;
+	if(Math.abs(position - 145) <= 10){
+		return 145;
+	}else if(Math.abs(position - 400) <= 10){
+		return 400;
+	}else if(Math.abs(position + 110) <= 10){
+		return -110;
 	}else{
 		return 1000;
 	}
@@ -390,24 +392,25 @@ function getMiddleFruit(order1, order2, order3){
 	console.log(middle1 + ":" + middle2 + ":" + middle3);
 	if(middle1 == middle2 && middle2 == middle3){
 		// Win
-		total += bet * 500;
-		$("#total_content").text(formatNumber(total));
-		$("#victory").html('<embed id="victory" width="0" height="0" src="resource/victory_voice.mp3" autostart="true"></embed>');
-		$("#swf_winlight").html('<embed class="win_light" base="." height="100%" loop="false" menu="true" play="true" src="resource/win_light.swf" type="application/x-shockwave-flash" width="100%" wmode="transparent"></embed>');
-		$("#swf_win").html('<embed class="win_light" base="." height="100%" loop="false" menu="true" play="true" src="resource/win.swf" type="application/x-shockwave-flash" width="100%" wmode="transparent"></embed>')
-		$("#title").html("<img src='resource/winner.png' class='title-content' />");
+		money += 5;
+		$("#total_content").text(formatNumber(money*500));
+		$("#victory").html('<embed id="victory" width="0" height="0" src="resources/victory_voice.mp3" autostart="true"></embed>');
+		$("#swf_winlight").html('<embed class="win_light" base="." height="100%" loop="false" menu="true" play="true" src="resources/win_light.swf" type="application/x-shockwave-flash" width="100%" wmode="transparent"></embed>');
+		$("#swf_win").html('<embed class="win_light" base="." height="100%" loop="false" menu="true" play="true" src="resources/win.swf" type="application/x-shockwave-flash" width="100%" wmode="transparent"></embed>')
+		$("#title").html("<img src='resources/winner.png' width='450px' />");
 		setTimeout(function(){
 			$("#swf_winlight").html('');
 		}, 2000);
-		iosocket.emit('buttonval',total);
+		iosocket.emit('buttonval',money);
 		console.log("Win");
 	}else{
 		// Lose
 		// $("#victory").html('<embed id="victory" width="0" height="0" src="resources/victory_voice.mp3" autostart="true"></embed>');
-		$("#swf_thorn_close").html('<embed class="thorn" base="." height="100%" loop="false" menu="true" play="true" src="resource/thorn.swf" type="application/x-shockwave-flash" width="580" wmode="transparent"></embed>');
-		$("#title").html("<img src='resource/playagain.png' class='title-content' />");
+		$("#lose").html('<embed id="lose" width="0" height="0" src="resources/lose.mp3" autostart="true"></embed>');
+		$("#swf_thorn_close").html('<embed class="thorn" base="." height="100%" loop="false" menu="true" play="true" src="resources/thorn.swf" type="application/x-shockwave-flash" width="580" wmode="transparent"></embed>');
+		$("#title").html("<img src='resources/playagain.png' width='450px' />");
 		console.log("Lose");
-		iosocket.emit('buttonval',total);
+		iosocket.emit('buttonval',money);
 	}
 	changeRose();
 }
@@ -441,31 +444,31 @@ function getStopY(rankFruit, resultArray){
 	switch(rankFruit[0]){
 		case "#a1":
 			resultArray.push($("#a3").html());
-			return [300, 560, 40];
+			return [145, 400, -110];
 		case "#a2":
 			resultArray.push($("#a4").html());
-			return [40, 300, 560];
+			return [-110, 145, 400];
 		case "#a3":
 			resultArray.push($("#a1").html());
-			return [560, 40, 300];
+			return [400, -110, 145];
 		case "#b1":
 			resultArray.push($("#b3").html());
-			return [300, 560, 40];
+			return [145, 400, -110];
 		case "#b2":
 			resultArray.push($("#b4").html());
-			return [40, 300, 560];
+			return [-110, 145, 400];
 		case "#b3":
 			resultArray.push($("#b1").html());
-			return [560, 40, 300];
+			return [400, -110, 145];
 		case "#c1":
 			resultArray.push($("#c3").html());
-			return [300, 560, 40];
+			return [145, 400, -110];
 		case "#c2":
 			resultArray.push($("#c4").html());
-			return [40, 300, 560];
+			return [-110, 145, 400];
 		case "#c3":
 			resultArray.push($("#c1").html());
-			return [560, 40, 300];
+			return [400, -110, 145];
 		default:
 			return null;
 	}
@@ -495,6 +498,6 @@ function formatNumber(number){
     while (rgx.test(x1)) {
         x1 = x1.replace(rgx, '$1' + ',' + '$2');
     }
-    console.log(typeof(x1));
+    // console.log(x1);
     return x1;
 }

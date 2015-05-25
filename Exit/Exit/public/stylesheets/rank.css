@@ -1,0 +1,53 @@
+body {
+	background-image: url("/images/background.jpg");
+	/*background-color: rgba(255, 255, 255, 1);*/
+	background-size: 100%;
+	background-repeat: no-repeat;
+}
+.title{
+	color: #FFFFFF;
+	margin-top: 100px;
+	text-align: center;
+	font-size: 4em;
+	font-family: 'Permanent Marker', cursive;
+}
+.sub-title{
+	color: #FFFFFF;
+	text-align: center;
+	font-family: 'Permanent Marker', cursive;
+}
+table{
+	width: 100%;
+}
+#personal_rank{
+	border-top-style: solid;
+	border-right-style: solid;
+}
+#department_rank{
+	border-top-style: solid;
+	border-left-style: solid;
+}
+table > tbody > tr > th, table > tbody{
+	text-align: center;
+	color: #FFFFFF;
+}
+table > tbody > tr > th {
+	font-size: 36px;
+	font-weight: lighter;
+	color: #FFFFFF;
+}
+table > tbody > tr > td {
+	padding: 3px;
+	padding-top: 6px;
+	padding-bottom: 6px;
+	font-size: 24px;
+}
+table > tbody > tr:nth-child(odd){
+	background: #980234;
+}
+table > tbody > tr:nth-child(0){
+	background: #000000;
+}
+.glyphicon{
+	color: #FFFF00;
+}

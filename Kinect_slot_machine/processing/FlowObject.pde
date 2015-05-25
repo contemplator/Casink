@@ -4,17 +4,17 @@ class FlowObject {
   int margin_left;
   boolean flowing = false;
   int top1, top2, top3;
-  int image_width = 180;
-  int image_height = 180;
+  int image_width = 90;
+  int image_height = 90;
   private String[] imgs = {"white.png", "blue.png", "red.png"};
   public String[] roses = {};
   public boolean isRunning;
    
   FlowObject (int left) {  
     margin_left = left;
-    top1 = 130;
-    top2 = 400;
-    top3 = 670;
+    top1 = 140;
+    top2 = 270;
+    top3 = 400;
     
     int index = int(random(0, imgs.length));
     img1 = loadImage(imgs[index]);
@@ -36,7 +36,7 @@ class FlowObject {
     img2.resize(image_width, image_height);
     img3.resize(image_width, image_height);
     isRunning = false;
-    velocity = int(random(30, 50));
+    velocity = int(random(20, 35));
   }
   
   void flow(){
@@ -77,9 +77,10 @@ class FlowObject {
         velocity -= 0.01;
       }
       
-      if(abs(top1-380) <= 20 || abs(top2-380) <= 20 || abs(top3-380) <= 20){
+      if(abs(top1-275) <= 1 || abs(top2-275) <= 1 || abs(top3-275) <= 1){
         result(top1, top2, top3);
         isRunning = false;
+        println(top1 + ";" + top2 + ";" + top3);
         return;
       }
     }
@@ -95,7 +96,7 @@ class FlowObject {
     while(true){
       flow();
       display();
-      if(abs(top1-380) <= 20 || abs(top2-380) <= 20 || abs(top3-380) <= 20){
+      if(abs(top1-270) <= 20 || abs(top2-270) <= 20 || abs(top3-270) <= 20){
         roses = result(top1, top2, top3);
         isRunning = false;
         return;

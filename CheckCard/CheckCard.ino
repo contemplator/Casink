@@ -84,6 +84,7 @@ void loop(){
         }else{
           lcd.print(format_string(String(readbackblock[i])));
         }
+        Serial.println( i + String(readbackblock[i]));
     }
 }
 

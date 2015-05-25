@@ -7,16 +7,14 @@
  * SPI SCK    13
  * 3.3V       3.3V
  * GND        GND
- * LED 1      2
- * LED 2      3
- * LED 3      4
+ * button     2
 */
 
 #include <SPI.h>
 #include <MFRC522.h>
 
 #define SS_PIN 10
-#define RST_PIN 5
+#define RST_PIN 9
 MFRC522 mfrc522(SS_PIN, RST_PIN);
 MFRC522::MIFARE_Key key;
 
@@ -29,8 +27,9 @@ char incomingByte;
 String txtMsg;
 int pre_money = 0;
 boolean new_user = true;
-const int buttonPin = 7;
-int buttonState = 0;
+const int buttonPin = 2;
+int lastState = 0;
+String username;
 
 void setup() {
     Serial.begin(9600);
@@ -39,10 +38,6 @@ void setup() {
     for (byte i = 0; i < 6; i++) {
         key.keyByte[i] = 0xFF;
     }
-        
-    pinMode(2, OUTPUT);
-    pinMode(3, OUTPUT);
-    pinMode(4, OUTPUT);
     pinMode(buttonPin, INPUT);
 }
 
@@ -53,6 +48,9 @@ void loop(){
         
     if ( ! mfrc522.PICC_IsNewCardPresent()) {
         new_user = true;
+        Serial.println("B0E");
+        delay(500);
+//        Serial.println("new");
         return;
     }
 
@@ -60,44 +58,49 @@ void loop(){
         new_user = true;
        	return;
     }
-    
+//    Serial.println("S");
     if(new_user == true){
         readBlock(block, readbackblock);
+        username = "";
+        for(int i=9; i<15; i++){
+          if(readbackblock[i] != 0){
+            char c = char(readbackblock[i]);
+            username += c;
+//            result[i-9] = readbackblock[i];
+          }
+        }
+        Serial.println("#"+username+"$");
+        
         String money = (String)readbackblock[15];
+        pre_money = money.toInt();
         Serial.println("B" + money + "E");
         new_user = false;
     }
     
     status_card = 2;
-    identifyStatus();
+//    identifyStatus();
     
     if(status_card == 2){
-        buttonState = digitalRead(buttonPin);
-        if (buttonState == 1) {
-            Serial.println("BSE");
-        }else{
+        int currentState = digitalRead(buttonPin);
+        if(currentState != lastState){
+          Serial.println("S");
+          lastState = currentState;
         }
-    }else{
-      
     }
     
     if (Serial.available() > 0) {
         incomingByte = (char) Serial.read();
+//        Serial.println(incomingByte);
         if(incomingByte == 'B'){
             txtMsg = "";
             txtMsg += "B";
             status_card = 3;
-            identifyStatus();
+//            identifyStatus();
+//            Serial.println("Begin");
         }else if(incomingByte == 'E'){
+//          Serial.println("End");
             txtMsg = txtMsg.substring(1);
-            blockcontent[15] = txtMsg.toInt();
-            writeBlock(block, blockcontent);
-            String money = (String)blockcontent[15];
-            Serial.println("B" + money + "E");
-            new_user = true;
-            txtMsg = "";
-            status_card = 1;
-            identifyStatus();
+            writeToRfid(txtMsg);
         }else{
             if(txtMsg.indexOf('B') == 0){
                 txtMsg += incomingByte;
@@ -106,18 +109,21 @@ void loop(){
     }
     
     delay(500);
-    
-//    readBlock(block, readbackblock);
-//    if(pre_money != readbackblock[14]){
-//        Serial.println(readbackblock[14]);
-//        pre_money = readbackblock[14];
-//    }
-//    Serial.print("read block: ");
-//    for (int j=0 ; j<16 ; j++){
-//        Serial.write(readbackblock[j]);
-//        Serial.println(readbackblock[14]);
-//    }
-//    Serial.println("");
+}
+
+void writeToRfid(String money_from){
+  readBlock(block, readbackblock);
+  for(int i=0; i<16; i++){
+    blockcontent[i] = readbackblock[i];
+  }
+  blockcontent[15] = money_from.toInt();
+  writeBlock(block, blockcontent);
+//  String money = (String)blockcontent[15];
+//  Serial.println("B" + money + "E" + "DONE");
+  new_user = true;
+  txtMsg = "";
+  status_card = 1;
+//  identifyStatus();
 }
 
 void identifyStatus(){

@@ -56,12 +56,20 @@ void loop(){
         
     if ( ! mfrc522.PICC_IsNewCardPresent()) {
 //        Serial.println("It is the same card.");
+        lcd.setCursor(0,0);
+        lcd.print(format_string("Device is ready"));
+        lcd.setCursor(0,1);
+        lcd.print(format_string(""));
         delay(500);
         return;
     }
 
     if ( ! mfrc522.PICC_ReadCardSerial()) {
 //        Serial.println("Can't read the card.");
+        lcd.setCursor(0,0);
+        lcd.print(format_string("Something is wrong!"));
+        lcd.setCursor(0,1);
+        lcd.print(format_string(""));
         delay(500);
        	return;
     }
@@ -76,32 +84,15 @@ void loop(){
       }
     }
     
-    money = readbackblock[15] * 500;
-    
-    if(money < 50000){
-      result = "Poor man";
-    }else if(money> 50000 && money<100000){
-      result = "normal man";
-    }else{
-      result = "Rich man";
-    }
-    
-    lcd.setCursor(0,0);
-    lcd.print(format_string("Are you " + username + " ?"));
-    lcd.setCursor(0,1);
-    lcd.print(format_string("You own " + String(money) + " ."));
-    delay(2000);
-    lcd.setCursor(0,0);
-    lcd.print(format_string("You are " + result + "."));
-    lcd.setCursor(0,1);
-    lcd.print(format_string("HaHaHa"));
-    delay(2000);
+    money = long(readbackblock[15]) * 500;
     
     currentData = "#" + String(userid) + ";" + String(money/500) + "$";
-    if(currentData != sendData){
+//    if(currentData != sendData){
       Serial.print(currentData);
       sendData = currentData;
-    }
+//    }
+    
+    displayResult();
     
     username = "";
     money = 0;
@@ -135,4 +126,75 @@ String format_string(String string){
     }
   }
   return string;
+}
+
+String format_money(long m){
+//  Serial.println(money);
+  String final = "$";
+  String money = String(m);
+//  Serial.println(money);
+  int length = money.length();
+  if(length > 6){
+//    Serial.println("6");
+    money = money.substring(0, (length-6))+ "," + money.substring((length-6), (length-3)) + "," + money.substring((length-3), length);
+  }else if(length > 3){
+    money = money.substring(0, (length-3)) + "," + money.substring((length-3), (length));
+  }
+  final = final + money;
+  final = format_string(final);
+  return final;
+}
+
+void displayResult(){
+    lcd.setCursor(0,0);
+    lcd.print(format_string("Are you " + username + " ?"));
+    lcd.setCursor(0,1);
+    lcd.print(format_string("You own " + format_money(money) ));
+    delay(2000);
+    
+    if(money <= 5000){
+      lcd.setCursor(0,0);
+      lcd.print(format_string("Such a Poor Guy."));
+      scrolling("HaHaHa XDDD");
+    }else if(money > 5000 && money <= 10000){
+      lcd.setCursor(0,0);
+      lcd.print(format_string("Just a Normal man."));
+      scrolling("/ _> \\");
+    }else if(money > 10000 && money <= 20000){
+      lcd.setCursor(0,0);
+      lcd.print(format_string("Just lucky.."));
+      scrolling("Do you wnat to challenge again?");
+    }else if(money > 20000 && money <= 50000){
+      lcd.setCursor(0,0);
+      lcd.print(format_string("WOW"));
+      scrolling("You are the destiny person!");
+    }else if(money > 50000){
+      lcd.setCursor(0,0);
+      lcd.print(format_string("Unbelievable"));
+      scrolling("Congraduation! You are best!");
+    }
+//    delay(3000);
+}
+
+void scrolling(String message){
+  int length = message.length();
+  if(length > 16){
+    for(int j=0; j<2; j++){
+      for(int i=0; i<(length - 16); i++){
+        lcd.setCursor(0,1);
+        lcd.print(format_string(message.substring(i, i+16)));
+        delay(300);
+      }
+      
+      for(int i=(length-16); i>= 0; i--){
+        lcd.setCursor(0,1);
+        lcd.print(format_string(message.substring(i, i+16)));
+        delay(300);
+      }
+    }
+  }else{
+    lcd.setCursor(0,1);
+    lcd.print(format_string(message));
+    delay(3000);
+  }
 }
