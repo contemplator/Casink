@@ -1,0 +1,156 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<script type="text/javascript" src="javascripts/jquery-latest.js"></script>
+		<script src="/socket.io/socket.io.js"></script>
+		<script type="text/javascript" src="/javascripts/slot.js"></script>
+		<link rel="stylesheet" href="/stylesheets/style.css">
+		<link href='/stylesheets/Codystar.css' rel='stylesheet' type='text/css'>
+		<link href='/stylesheets/Lobster.css' rel='stylesheet' type='text/css'>
+		<!-- <link href='http://fonts.googleapis.com/css?family=Lobster' rel='stylesheet' type='text/css'> -->
+	</head>
+	<script type="text/javascript">
+		// initial socket with arduino
+		var iosocket;
+		var receive_order;
+		var storage_order;
+		var bet = 500;
+		var whole_order = "";
+		var money = 0;
+
+		window.onload = function() {
+		    initSocketIO();
+	    };
+
+		function initSocketIO(){
+			iosocket = io.connect();
+			iosocket.on('update', function (recievedData) {
+				receive_order = recievedData.switchValue;
+				console.log("receive_order:" + receive_order);
+
+				if(receive_order.indexOf("B")>=0 && receive_order.
+					indexOf("E")>=0){
+					storage_order = receive_order;
+					var start = storage_order.indexOf("B");
+					var end = storage_order.indexOf("E");
+					money = parseInt(storage_order.substring(start+1, end));
+					if(money != 0){
+						$("#slot_card").html('<embed id="pull" width="0" height="0" src="resources/slot_card.mp3" autostart="true"></embed>');
+					}
+					$("#total_content").text(formatNumber(money*500));
+					console.log("own_money: " + money);
+					$("#bet_content").text(bet);
+					receive_order = "";
+				}else if(receive_order.indexOf("B")>=0 && receive_order.indexOf("E")<0){
+					storage_order = receive_order;
+				}else if(receive_order.indexOf("B")<0 && receive_order.indexOf("E")>=0){
+					storage_order += receive_order;
+					var start = storage_order.indexOf("B");
+					var end = storage_order.indexOf("E");
+					money = parseInt(storage_order.substring(start+1, end));
+					if(money != 0){
+						$("#slot_card").html('<embed id="pull" width="0" height="0" src="resources/slot_card.mp3" autostart="true"></embed>');
+					}
+					$("#total_content").text(formatNumber(money*500));
+					console.log("own_money: " + money);
+					$("#bet_content").text(bet);
+					storage_order = "";
+				}else{
+					storage_order += receive_order;
+				}
+
+				if(receive_order.indexOf("#")>=0 && receive_order.indexOf("$")>=0){
+					var start = receive_order.indexOf("#");
+					var end = receive_order.indexOf("$");
+					username = receive_order.substring(start+1, end);
+
+					// console.log("username: " + username);
+					// $("#title > div").html(username);
+				}
+
+				// if(whole_order.indexOf("B") >= 0 && whole_order.indexOf("E") >= 0){
+				// 	console.log("money = " + whole_order.substring(1, whole_order.length -1));
+				// 	total = parseInt(whole_order.substring(1, whole_order.length -2));
+				// 	$("#total_content").text(formatNumber(total)*500);
+				// 	$("#bet_content").text(bet);
+				// 	whole_order = "";
+				// }
+
+				// 如果收到開始的訊號
+				if(receive_order.trim() == "S" && $("#swf_thorn_close").html() != '' && money != 0){
+					$("#swf_thorn_open").html('<embed class="thorn" base="." height="100%" loop="false" menu="true" play="true" src="resources/thorn_back.swf" type="application/x-shockwave-flash" width="580" wmode="transparent"></embed>');
+					$("#swf_thorn_close").html('');
+					$("#pull").html('<embed id="pull" width="0" height="0" src="resources/pull_voice.mp3" autostart="true"></embed>');
+
+					setTimeout(function(){
+						startGame();
+					}, 1000);
+				}else if(receive_order.trim() == "S" && $("#swf_win").html() != '' && money != 0){
+					$("#swf_thorn_open").html('<embed class="thorn" base="." height="100%" loop="false" menu="true" play="true" src="resources/thorn_back.swf" type="application/x-shockwave-flash" width="580" wmode="transparent"></embed>');
+					setTimeout(function(){
+						startGame();
+					}, 1000);
+				}
+			});
+		}
+	</script>
+	<boby>
+		<div>
+			<!-- <div><Button id="btn-start" onclick="startGame()">開始遊戲</Button></div> -->
+			<div id="canvas">
+				<div id="white1">
+					<div id="a1"><img src="/resources/white.png" class="rose"></div>
+					<div id="a2"></div>
+					<div id="a3"></div>
+					<div id="a4"></div> 
+				</div>
+				<div id="white2">
+					<div id="b1"></div>
+					<div id="b2"></div>
+					<div id="b3"></div>
+					<div id="b4"></div>
+				</div>
+				<div id="white3">
+					<div id="c1"></div>
+					<div id="c2"></div>
+					<div id="c3"></div>
+					<div id="c4"></div>
+				</div>
+				<div id="white4">
+					<div id="d1"></div>
+					<div id="d2"></div>
+					<div id="d3"></div>
+					<div id="d4"></div>
+				</div>
+				<div id="white5">
+					<div id="e1"></div>
+					<div id="e2"></div>
+					<div id="e3"></div>
+					<div id="e4"></div>
+				</div>
+			</div>
+		</div>
+
+		<div id="black"></div>
+
+		<div id="title"><div>Casink</div></div>
+		<div id="total">
+			<div id="total_content">999,999</div>
+			<!-- $("#total_content") -->
+		</div>
+		<div id="bet">
+			<div id="bet_content">500</div>
+		</div>
+
+		<div id="pull"></div>
+		<div id="victory"></div>
+		<div id="lose"></div>
+		<div id="slot_card"></div>
+		<div id="scrolling"></div>
+		<div id="swf_thorn_close"></div>
+		<div id="swf_thorn_open"></div>
+		<div id="swf_win"></div>
+		<!-- <embed class="thorn" base="." height="100%" loop="false" menu="true" play="true" src="resources/thorn.swf" 
+				type="application/x-shockwave-flash" width="580" wmode="transparent"></embed>-->
+	</body>
+</html>

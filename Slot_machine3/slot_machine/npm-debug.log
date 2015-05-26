@@ -1,0 +1,71 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'node', '/usr/local/bin/npm', 'install', 'socketio' ]
+2 info using npm@1.4.28
+3 info using node@v0.10.32
+4 verbose readDependencies using package.json deps
+5 verbose cache add [ 'socketio', null ]
+6 verbose cache add name=undefined spec="socketio" args=["socketio",null]
+7 verbose parsed url { protocol: null,
+7 verbose parsed url   slashes: null,
+7 verbose parsed url   auth: null,
+7 verbose parsed url   host: null,
+7 verbose parsed url   port: null,
+7 verbose parsed url   hostname: null,
+7 verbose parsed url   hash: null,
+7 verbose parsed url   search: null,
+7 verbose parsed url   query: null,
+7 verbose parsed url   pathname: 'socketio',
+7 verbose parsed url   path: 'socketio',
+7 verbose parsed url   href: 'socketio' }
+8 silly lockFile be461470-socketio socketio
+9 verbose lock socketio /Users/idlefox/.npm/be461470-socketio.lock
+10 silly lockFile be461470-socketio socketio
+11 silly lockFile be461470-socketio socketio
+12 verbose addNamed [ 'socketio', '' ]
+13 verbose addNamed [ null, '*' ]
+14 silly lockFile fa004f70-socketio socketio@
+15 verbose lock socketio@ /Users/idlefox/.npm/fa004f70-socketio.lock
+16 silly addNameRange { name: 'socketio', range: '*', hasData: false }
+17 verbose request where is /socketio
+18 verbose request registry https://registry.npmjs.org/
+19 verbose request id 4afdc74ada6fa802
+20 verbose url raw /socketio
+21 verbose url resolving [ 'https://registry.npmjs.org/', './socketio' ]
+22 verbose url resolved https://registry.npmjs.org/socketio
+23 verbose request where is https://registry.npmjs.org/socketio
+24 info trying registry request attempt 1 at 02:27:54
+25 http GET https://registry.npmjs.org/socketio
+26 http 404 https://registry.npmjs.org/socketio
+27 silly registry.get cb [ 404,
+27 silly registry.get   { server: 'CouchDB/1.5.0 (Erlang OTP/R16B03)',
+27 silly registry.get     etag: '"5RGC7F7X0Z6GAGOGHVGFIPIJR"',
+27 silly registry.get     'content-type': 'application/json',
+27 silly registry.get     'cache-control': 'max-age=0',
+27 silly registry.get     'content-length': '436',
+27 silly registry.get     'accept-ranges': 'bytes',
+27 silly registry.get     date: 'Tue, 26 May 2015 18:27:04 GMT',
+27 silly registry.get     via: '1.1 varnish',
+27 silly registry.get     age: '0',
+27 silly registry.get     connection: 'keep-alive',
+27 silly registry.get     'x-served-by': 'cache-hkg6823-HKG',
+27 silly registry.get     'x-cache': 'MISS',
+27 silly registry.get     'x-cache-hits': '0',
+27 silly registry.get     'x-timer': 'S1432664823.983750,VS0,VE263',
+27 silly registry.get     vary: 'Accept' } ]
+28 silly lockFile fa004f70-socketio socketio@
+29 silly lockFile fa004f70-socketio socketio@
+30 error 404 Not Found
+30 error 404
+30 error 404 'socketio' is not in the npm registry.
+30 error 404 You should bug the author to publish it
+30 error 404 It was specified as a dependency of 'slot_machine'
+30 error 404
+30 error 404 Note that you can also install from a
+30 error 404 tarball, folder, or http url, or git url.
+31 error System Darwin 14.0.0
+32 error command "node" "/usr/local/bin/npm" "install" "socketio"
+33 error cwd /Users/idlefox/Casink/Slot_machine3/slot_machine
+34 error node -v v0.10.32
+35 error npm -v 1.4.28
+36 error code E404
+37 verbose exit [ 1, true ]

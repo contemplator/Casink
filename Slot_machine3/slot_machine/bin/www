@@ -1,0 +1,155 @@
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+ */
+
+var app = require('../app');
+var debug = require('debug')('slot_machine3:server');
+var http = require('http');
+var socketio = require('socket.io');
+var SerialPort = require("serialport").SerialPort;
+
+var socketServer;
+var serialPort;
+var portName = '/dev/tty.usbmodem1421'; //change this to your Arduino port
+var sendData = "";
+var currentValue = "0";
+
+/**
+ * Get port from environment and store in Express.
+ */
+
+var port = normalizePort(process.env.PORT || '3000');
+app.set('port', port);
+
+/**
+ * Create HTTP server.
+ */
+
+var server = http.createServer(app);
+
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+
+server.listen(port);
+server.on('error', onError);
+server.on('listening', onListening);
+initSocketIO(server, debug);
+serialListener(debug);
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
+
+function normalizePort(val) {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+}
+
+/**
+ * Event listener for HTTP server "error" event.
+ */
+
+function onError(error) {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
+
+  var bind = typeof port === 'string'
+    ? 'Pipe ' + port
+    : 'Port ' + port
+
+  // handle specific listen errors with friendly messages
+  switch (error.code) {
+    case 'EACCES':
+      console.error(bind + ' requires elevated privileges');
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      console.error(bind + ' is already in use');
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+}
+
+/**
+ * Event listener for HTTP server "listening" event.
+ */
+
+function onListening() {
+  var addr = server.address();
+  var bind = typeof addr === 'string'
+    ? 'pipe ' + addr
+    : 'port ' + addr.port;
+  debug('Listening on ' + bind);
+}
+
+function initSocketIO(httpServer,debug){
+  socketServer = socketio.listen(httpServer);
+  if(debug == false){
+    socketServer.set('log level', 1); // socket IO debug off
+  }
+  socketServer.on('connection', function (socket) {
+    console.log("user connected");
+    socket.emit('onconnection', {pollOneValue:sendData});
+    // socketServer.on('update', function(data) {
+    //  console.log("ho");
+    //  socket.emit('updateData',{pollOneValue:data}); // send data on the updateDate channel
+    // });
+    // send value to arduino
+    socket.on('buttonval', function(data) {
+      serialPort.write('B' + data + 'E');
+    });
+  });
+}
+
+// Listen to serial port
+function serialListener(debug){
+    var receivedData = "";
+    serialPort = new SerialPort(portName, {
+        baudrate: 9600,
+        // defaults for Arduino serial communication
+        dataBits: 8,
+        parity: 'none',
+        stopBits: 1,
+        flowControl: false
+    });
+ 
+    serialPort.on("open", function () {
+        console.log('open serial communication');
+            // Listens to incoming data
+        serialPort.on('data', function(data) {
+          receivedData = data.toString();
+          sendData = receivedData;
+          // receivedData = "";
+          currentValue = sendData;
+          socketServer.emit('update', {switchValue:currentValue});
+          console.log(receivedData);
+          //  if (receivedData .indexOf('E') >= 0 && receivedData .indexOf('S') >= 0) {
+          //      sendData = receivedData;
+          //      receivedData = '';
+          // }
+          // check current-value is different pre-value
+          // if(currentValue != sendData){
+          //  currentValue = sendData;
+          //  socketServer.emit('update', {switchValue:currentValue});
+          //  console.log(currentValue);
+          // }
+        });  
+    });  
+}

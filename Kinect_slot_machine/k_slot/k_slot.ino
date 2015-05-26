@@ -44,7 +44,8 @@ void loop(){
   
   if ( ! mfrc522.PICC_IsNewCardPresent()) {
 //    Serial.println("same");
-//    delay(500);
+    Serial.println("BOE");
+    delay(500);
     new_user = true;
     return;
   }

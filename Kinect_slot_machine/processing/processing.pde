@@ -25,7 +25,7 @@ static long lastDebounceTime;
 static final int DEBOUNCE_DELAY = 5000;
 
 int money = 0;
-int bet = 500;
+int bet = 1000;
 String result = "Casink";
 boolean handup = false;
 boolean currentHand = false;
@@ -85,7 +85,7 @@ void draw(){
   middle.display();
   right.flow();
   right.display();
-//  image(background_img,0,0); // use the background image to cover the roses
+  image(background_img,0,0); // use the background image to cover the roses
   
   // display isUser
   drawLight();
@@ -94,55 +94,61 @@ void draw(){
 }
 
 void drawSkeleton(int userId){
-  PVector position_shoulder = new PVector();
-  context.getJointPositionSkeleton(userId, SimpleOpenNI.SKEL_LEFT_SHOULDER, position_shoulder);
-//  fill(255, 0, 0);
-//  text(position_shoulder.y, 10, 90);
-  PVector position_hand = new PVector();
-  context.getJointPositionSkeleton(userId, SimpleOpenNI.SKEL_LEFT_HAND, position_hand);
-//  fill(255, 0, 0);
-//  text(position_hand.y, 10,180);
-  PVector position_lhand = new PVector();
-  context.getJointPositionSkeleton(userId, SimpleOpenNI.SKEL_RIGHT_HAND, position_lhand);
   PVector position_middle = new PVector();
   context.getJointPositionSkeleton(userId, SimpleOpenNI.SKEL_TORSO, position_middle);
+//  println(position_middle.x);
+  if(position_middle.z > 2000 && position_middle.z < 3000 
+      && position_middle.x < 600 && position_middle.x > -500){
+    isUser = true;
+    drawLight();
+    PVector position_shoulder = new PVector();
+    context.getJointPositionSkeleton(userId, SimpleOpenNI.SKEL_LEFT_SHOULDER, position_shoulder);
+    PVector position_hand = new PVector();
+    context.getJointPositionSkeleton(userId, SimpleOpenNI.SKEL_LEFT_HAND, position_hand);
+    PVector position_lhand = new PVector();
+    context.getJointPositionSkeleton(userId, SimpleOpenNI.SKEL_RIGHT_HAND, position_lhand);
+    
+    if(position_hand.y > position_shoulder.y){
+      handup = true;
+    }else{
+      if(handup == true){
+        
+        startGame();
+      }
+      handup = false;
+    }
+    
+    if(position_lhand.x > position_middle.x){
+      handmiddle2 = true;
+    }else{
+      if(handmiddle2 == true && (left.isRunning == false && 
+        middle.isRunning == false && right.isRunning == false)){
+        minusBet();
+      }
+      handmiddle2 = false;
+    }
+    
+    if(position_hand.x < position_middle.x){
+      handmiddle1 = true;
+    }else{
+      if(handmiddle1 == true && (left.isRunning == false && 
+        middle.isRunning == false && right.isRunning == false)){
+        addBet();
+      }
+      handmiddle1 = false;
+    }
+  }else{
+    isUser = false;
+  }
+  
 //  fill(255, 0, 0);
   
 //  fill(255, 0, 0);
   
 //  fill(255, 0, 0);
-  text(position_middle.x, 10, 450);
-  text(position_hand.x, 10, 330);
-  text(position_lhand.x, 10, 210);
-  
-  if(position_hand.y > position_shoulder.y){
-    handup = true;
-  }else{
-    if(handup == true){
-      startGame();
-    }
-    handup = false;
-  }
-  
-  if(position_lhand.x > position_middle.x){
-    handmiddle2 = true;
-  }else{
-    if(handmiddle2 == true){
-      minusBet();
-    }
-    handmiddle2 = false;
-  }
-  
-  if(position_hand.x < position_middle.x){
-    handmiddle1 = true;
-  }else{
-    if(handmiddle1 == true){
-      addBet();
-    }
-    handmiddle1 = false;
-  }
-  
-//  if(position_hand.
+//  text(position_middle.x, 10, 450);
+//  text(position_hand.x, 10, 330);
+//  text(position_lhand.x, 10, 210);
 }
 
 
@@ -160,9 +166,9 @@ void startGame(){
     lastDebounceTime = currentTime;
     
     if(left.isRunning == false && middle.isRunning == false &&
-      right.isRunning == false ){
+      right.isRunning == false){
         
-//        if(money > 0){
+        if(money > 1000){
           left = new FlowObject(215);
           middle = new FlowObject(355);
           right = new FlowObject(495);
@@ -171,7 +177,7 @@ void startGame(){
           right.isRunning = true;
           player.rewind();
           player.play();
-//        }
+        }
     }else{
       left.stop();
       middle.stop();
@@ -217,12 +223,12 @@ void onNewUser(SimpleOpenNI curContext, int userId){
   println("\tstart tracking skeleton");
   
   curContext.startTrackingSkeleton(userId);
-  isUser = true;
+//  isUser = true;
 }
 
 void onLostUser(SimpleOpenNI curContext, int userId){
   println("onLostUser - userId: " + userId);
-  isUser = false;
+//  isUser = false;
 }
 
 void onVisibleUser(SimpleOpenNI curContext, int userId){
@@ -279,7 +285,7 @@ void drawLight(){
     fill(255, 0, 0, 80);
     noStroke();
     ellipse(75, 55, 65, 65);
-    fill(252, 222, 40, 80);
+    fill(252, 222, 40, 225);
     noStroke();
     ellipse(75, 145, 65, 65);
     fill(0, 255, 0, 225);

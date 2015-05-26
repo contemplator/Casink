@@ -93,10 +93,16 @@ function checkId(){
 	if(id_val.length == 8){
 		var detemine_code = id_val.substring(2,5);
 		$("#department").val(department[detemine_code]);
+		if($("#department").val() == ""){
+			$("#department").val("校外陣營");
+		}
 		$("#error_message").text("");
 	}else if(id_val.length == 9){
 		var detemine_code = id_val.substring(3,6);
 		$("#department").val(department[detemine_code]);
+		if($("#department").val() == ""){
+			$("#department").val("校外陣營");
+		}
 		$("#error_message").text("");
 	}else{
 		$("#student_id").parent().parent().attr("class", "form-group");
